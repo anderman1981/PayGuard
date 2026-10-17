@@ -25,19 +25,40 @@ export function viewIngesta(ctx) {
   const { el } = ctx;
   const result = el('div', { id: 'ingesta-result' });
 
-  const root = el('div', { class: 'stack' }, [
+  /** @type {[string, string, () => HTMLElement][]} */
+  const tabs = [
+    ['capturar', 'Capturar', () => sectionManual(ctx, result)],
+    ['json', 'Pegar JSON', () => sectionJson(ctx, result)],
+    ['subir', 'Subir archivo', () => sectionUpload(ctx, result)],
+    ['set', 'Set de ejemplo', () => sectionSet(ctx, result)],
+  ];
+  let active = 'capturar';
+  const nav = el('div', { class: 'tabs', role: 'tablist', 'aria-label': 'Formas de ingresar facturas' });
+  const body = el('div', { class: 'tab-body' });
+
+  function paint() {
+    nav.textContent = '';
+    for (const [id, label] of tabs) {
+      const b = el('button', { type: 'button', class: 'tab', role: 'tab', text: label });
+      if (id === active) b.setAttribute('aria-selected', 'true');
+      b.addEventListener('click', () => { active = id; paint(); });
+      nav.append(b);
+    }
+    body.textContent = '';
+    const current = tabs.find(([id]) => id === active);
+    if (current) body.append(current[2]());
+  }
+  paint();
+
+  return el('div', { class: 'stack' }, [
     el('p', {
       class: 'muted',
       text: 'Así entran las facturas al agente. Él decide pagar, frenar o escalar según las reglas; '
         + 'nunca mueve dinero. La misma lógica está disponible por API para otros sistemas.',
     }),
-    sectionManual(ctx, result),
-    sectionJson(ctx, result),
-    sectionUpload(ctx, result),
-    sectionSet(ctx, result),
+    nav, body,
     el('div', { class: 'stack' }, [el('h2', { text: 'Resultado' }), result]),
   ]);
-  return root;
 }
 
 /** Caja de resultado reutilizable. @param {IngestaCtx} ctx @param {HTMLElement} box @param {any[]} decisions */

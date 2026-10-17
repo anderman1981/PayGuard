@@ -127,6 +127,14 @@ pre {
   th:nth-child(3), td:nth-child(3) { display: none; }
 }
 
+/* Ingesta: tabs internas */
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--seam); }
+.tab { border: 0; background: transparent; color: var(--ink-2); font: inherit; cursor: pointer;
+  padding: 9px 15px; border-radius: 10px 10px 0 0; margin-bottom: -1px; }
+.tab:hover { color: var(--ink); background: var(--panel-2); }
+.tab[aria-selected="true"] { color: var(--ink); font-weight: 600; box-shadow: inset 0 -2px 0 var(--accent); }
+.tab-body { padding-top: 16px; }
+
 /* Ingesta */
 textarea { width: 100%; box-sizing: border-box; font: inherit; padding: 10px 12px; border-radius: var(--radius-sm);
   border: 1px solid var(--seam); background: var(--panel); color: var(--ink); resize: vertical; }

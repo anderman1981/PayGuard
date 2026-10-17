@@ -3,6 +3,9 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado según CONTRIBUTING.md §2.
 
 ## [Unreleased]
+### Changed
+- UI: la vista **Ingesta** separa sus cuatro formas de ingresar facturas en **tabs internas** (Capturar, Pegar JSON, Subir archivo, Set de ejemplo), con la caja de Resultado compartida debajo; antes estaban apiladas.
+
 ### Added
 - M11 Ingesta: nueva vista "Ingesta" en la UI para que entren facturas al agente — captura manual con formulario, pegar JSON (una o varias) y subir un archivo (PDF/imagen/texto, con `PAYGUARD_ALLOW_UPLOAD=1`), más la lista del set de ejemplo con su estado. Helpers puros `buildManualInvoice`, `parseInvoicesJson`, `parseMoney` en `public/lib.js`.
 - M11 Notificaciones: aviso al humano dentro del sidebar (debajo del menú), con scroll y destacado, de las facturas que el agente NO paga (frenadas) o escala; suma sonido, contador en la pestaña del navegador y configuración de canal de Slack (webhook) y correo. Nuevo endpoint `POST /api/notify` (+ handler `postNotify`), apagado salvo `PAYGUARD_ALLOW_NOTIFY=1`, que solo acepta webhooks de `hooks.slack.com` y registra cada reenvío en la auditoría (tipo `notify`).
