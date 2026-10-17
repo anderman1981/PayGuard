@@ -343,6 +343,29 @@ async function start() {
     setNotice(`${state.decisions.length} facturas procesadas.`, 'ok');
   });
 
+  const resetBtn = /** @type {HTMLButtonElement} */ ($('reset-demo'));
+  let resetPending = false;
+  resetBtn.addEventListener('click', async () => {
+    if (!resetPending) {
+      resetPending = true;
+      resetBtn.textContent = '¿Confirmar? Clic de nuevo';
+      resetBtn.classList.add('btn-warn');
+      setTimeout(() => { resetPending = false; resetBtn.textContent = '↺ Reiniciar demo'; resetBtn.classList.remove('btn-warn'); }, 4000);
+      return;
+    }
+    resetPending = false;
+    resetBtn.textContent = '↺ Reiniciar demo';
+    resetBtn.classList.remove('btn-warn');
+    setNotice('Reiniciando estado…', 'ok');
+    await api('/reset', { method: 'POST' });
+    await refresh();
+    setNotice('Generando facturas ficticias…', 'ok');
+    render();
+    await runBatch();
+    state.view = 'resumen';
+    setNotice(`✓ Demo lista: ${state.decisions.length} facturas ficticias generadas y evaluadas.`, 'ok');
+  });
+
   await refresh();
 }
 
