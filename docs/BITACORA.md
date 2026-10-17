@@ -18,4 +18,5 @@ Una línea por sesión de trabajo. Ver [DOC-RULE.md](DOC-RULE.md).
 | 2026-10-17 | claude | fix/ci-ladder-guard | 0.10.2 | CI: guardián de escalera de ramas (main←staging, staging←dev, dev←fea/fix) que rechaza PRs con origen incorrecto |
 | 2026-10-17 | claude | fix/ci-ladder-guard | 0.10.2 | CI: corrige el comando de typecheck (tsc) y lo hace informativo (gate real = quality.js) para desbloquear el check gates que siempre estaba rojo |
 | 2026-10-17 | claude | fea/m11-ingesta | 0.11.0 | M11: vista Ingesta (captura/JSON/subir archivo), fix ruta /api/upload, notificaciones al humano en el sidebar (audio+badge+Slack/correo, /api/notify), sidebar de alto fijo con scroll interno, docs/API.md |
+| 2026-10-17 | claude | fea/m14-corrida-diaria | 0.12.0 | M14: vista "Hoy" con corrida diaria en vivo (SSE), endpoints GET/POST /api/daily-run, disparador 07:00 gated por PAYGUARD_DAILY, novedades conectadas al aviso al humano; cero pagos reales |
 | 2026-10-17 | claude | fea/m15-ingesta-tabs | 0.13.0 | UI: la vista Ingesta separa sus cuatro secciones en tabs internas (Capturar/Pegar JSON/Subir archivo/Set de ejemplo) con la caja de Resultado compartida |
