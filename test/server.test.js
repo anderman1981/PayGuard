@@ -14,6 +14,15 @@ test('servidor: health, company, rules y validación', async () => {
     assert.equal(bad.status, 400);
     const ok = await fetch(`${base}/api/rules`, { method: 'PUT', body: JSON.stringify({ humanApprovalAboveUSD: 4000 }) });
     assert.equal((await ok.json()).humanApprovalAboveUSD, 4000);
+    // la ruta de subida es alcanzable (antes la tapaba el 404 genérico): sin
+    // PAYGUARD_ALLOW_UPLOAD responde 403, no 404.
+    const upBody = JSON.stringify({ file: { name: 'f.pdf', mime: 'application/pdf', bytes: [] } });
+    const up = await fetch(`${base}/api/upload`, { method: 'POST', body: upBody });
+    assert.equal(up.status, 403);
+    // la ruta de notificación existe y está apagada por defecto.
+    const nt = await fetch(`${base}/api/notify`, { method: 'POST', body: JSON.stringify({ text: 'hola' }) });
+    assert.equal(nt.status, 200);
+    assert.equal((await nt.json()).slack, 'desactivado');
     assert.equal((await fetch(`${base}/`)).status, 200);
     assert.equal((await fetch(`${base}/src/config/default-rules.js`)).status, 200);
     assert.equal((await fetch(`${base}/src/..%2F.env.example`)).status, 403);

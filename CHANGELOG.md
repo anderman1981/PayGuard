@@ -4,6 +4,15 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 
 ## [Unreleased]
 ### Added
+- M11 Ingesta: nueva vista "Ingesta" en la UI para que entren facturas al agente — captura manual con formulario, pegar JSON (una o varias) y subir un archivo (PDF/imagen/texto, con `PAYGUARD_ALLOW_UPLOAD=1`), más la lista del set de ejemplo con su estado. Helpers puros `buildManualInvoice`, `parseInvoicesJson`, `parseMoney` en `public/lib.js`.
+- M11 Notificaciones: aviso al humano dentro del sidebar (debajo del menú), con scroll y destacado, de las facturas que el agente NO paga (frenadas) o escala; suma sonido, contador en la pestaña del navegador y configuración de canal de Slack (webhook) y correo. Nuevo endpoint `POST /api/notify` (+ handler `postNotify`), apagado salvo `PAYGUARD_ALLOW_NOTIFY=1`, que solo acepta webhooks de `hooks.slack.com` y registra cada reenvío en la auditoría (tipo `notify`).
+- `docs/API.md`: contrato de la API para sistemas externos (`/api/run`, `/api/upload`, `/api/notify`, consultas y aprobaciones).
+- UI: `public/ingesta.js` y `public/notify.js`; el sidebar ahora es de alto fijo y el scroll vive en el contenedor derecho y en la sección de avisos.
+
+### Fixed
+- La ruta `POST /api/upload` era inalcanzable: el 404 genérico de `/api/` estaba antes en el router; ahora responde el handler (403 si la subida está desactivada).
+
+### Added
 - CI: job `ladder` que hace cumplir la escalera de ramas en cada PR — `main` solo recibe de `staging`, `staging` solo de `dev`, `dev` solo de `fea/*` o `fix/*`; rechaza el PR si el origen no corresponde.
 
 ### Fixed

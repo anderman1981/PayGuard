@@ -179,3 +179,40 @@ test('upload: procesa el documento en modo caché y devuelve decisión', async (
     else process.env.PAYGUARD_ALLOW_UPLOAD = prev;
   }
 });
+
+test('notify: apagado por defecto, no reenvía nada', async () => {
+  const { state } = setup();
+  let called = 0;
+  const fetchImpl = async () => { called += 1; return /** @type {any} */ ({ ok: true }); };
+  const res = await api.postNotify(state, { text: 'hola', slackWebhook: 'https://hooks.slack.com/x' }, { fetchImpl, env: {} });
+  assert.equal(res.status, 200);
+  assert.deepEqual(res.body, { slack: 'desactivado', email: 'desactivado' });
+  assert.equal(called, 0);
+});
+
+test('notify: exige text', async () => {
+  const { state } = setup();
+  const res = await api.postNotify(state, {}, { env: { PAYGUARD_ALLOW_NOTIFY: '1' } });
+  assert.equal(res.status, 400);
+});
+
+test('notify: envía a un webhook de Slack y lo audita', async () => {
+  const { state } = setup();
+  /** @type {string[]} */ const urls = [];
+  const fetchImpl = async (/** @type {string} */ url) => { urls.push(url); return /** @type {any} */ ({ ok: true }); };
+  const res = await api.postNotify(state, { text: 'frené FAC-1', slackWebhook: 'https://hooks.slack.com/services/A/B/C' },
+    { fetchImpl, env: { PAYGUARD_ALLOW_NOTIFY: '1' } });
+  assert.equal(res.body.slack, 'enviado');
+  assert.equal(urls.length, 1);
+  assert.ok(state.audit.list().some((/** @type {any} */ e) => e.type === 'notify'));
+});
+
+test('notify: rechaza una URL que no es de Slack y no llama fetch', async () => {
+  const { state } = setup();
+  let called = 0;
+  const fetchImpl = async () => { called += 1; return /** @type {any} */ ({ ok: true }); };
+  const res = await api.postNotify(state, { text: 'x', slackWebhook: 'https://evil.example/x' },
+    { fetchImpl, env: { PAYGUARD_ALLOW_NOTIFY: '1' } });
+  assert.equal(res.body.slack, 'url no permitida');
+  assert.equal(called, 0);
+});
