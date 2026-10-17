@@ -4,6 +4,13 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-17
+### Added
+- M10: memoria de casos (RAG) sin dependencias — vectores deterministas, `CaseStore` con resolución humana y búsqueda por similitud.
+- M10: consejero que aporta ejemplos al extractor, una señal de riesgo que solo puede escalar, y propuestas de ajuste que nacen pendientes de aprobación humana.
+- `docs/AI-AND-LEARNING.md`: cadena de modelos (Gemini 2.5 Flash → Groq → OpenRouter → Ollama → caché) y camino al 99,9% de acierto.
+- ADR 0004: por qué el aprendizaje es memoria de casos con aprobación humana y no un modelo afinado.
+
 ## [0.3.0] - 2026-10-17
 ### Added
 - M3: motor de reglas con R01 a R12 (datos completos, instrucciones ocultas, duplicados, beneficiario, datos bancarios, contrato, moneda y país, fechas, límites, presupuesto, saldo y datos de pago internacionales), una regla por archivo.

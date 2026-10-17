@@ -14,6 +14,7 @@ PayGuard revisa las facturas de una empresa y decide por ella cuáles **pagar**,
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arquitectura y **contratos entre módulos** |
 | [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) | Requerimientos funcionales, no funcionales, hardware |
 | [docs/STACK.md](docs/STACK.md) | Tecnologías, paquetes y herramientas |
+| [docs/AI-AND-LEARNING.md](docs/AI-AND-LEARNING.md) | Qué modelo usa el agente y cómo aprende con el uso |
 | [docs/VALIDATORS.md](docs/VALIDATORS.md) | Validación de datos de pago e idioma (mundial + regional) |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Ramas, versionado, commits, gates |
 | [SECURITY.md](SECURITY.md) | Invariantes y políticas de seguridad |
@@ -36,6 +37,7 @@ PayGuard revisa las facturas de una empresa y decide por ella cuáles **pagar**,
 | M7 | Métricas de autonomía/seguridad + demo | ⏳ |
 | M8 | Validadores regionales (Colombia y otros) | ⏳ |
 | M9 | Multi-idioma y validadores internacionales (IBAN, BIC, ABA, divisas) | ✅ |
+| M10 | Aprendizaje continuo: memoria de casos (RAG) y propuestas con aprobación humana | ✅ |
 
 ## Correr
 

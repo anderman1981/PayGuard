@@ -75,6 +75,7 @@ export function validateExtraction(obj)
 | R11 | Hay saldo suficiente en la moneda | HOLD |
 | R12 | Datos de pago válidos: IBAN/BIC/ABA según el país, divisa ISO con sus decimales, cuadre de totales | ESCALATE |
 | R13 | (Regional, M8) Reglas del país del emisor, p. ej. NIT con dígito de verificación en Colombia | ESCALATE |
+| A01 | (M10, no es regla: consejo) Casos parecidos fueron rechazados por una persona | ESCALATE |
 
 Aritmética, conversión de moneda y fechas **siempre en código**, nunca en el LLM.
 
@@ -132,6 +133,16 @@ Los textos de cada motivo viven en `src/i18n/messages/rules-a.js` (R01–R06) y
 `src/i18n/messages/rules-b.js` (R07–R12); las etiquetas de interfaz en `src/i18n/messages.js`.
 Una regla que lance una excepción se registra como ESCALATE: nunca deja pasar un pago.
 
+### M10 · Aprendizaje — `src/learning/`
+```js
+export class CaseStore { add(...) · resolve(id, 'approved'|'rejected', reason) · similarTo(inv, opts) · stats() }
+export function advise(invoice, store, options) // => { similar, rejectionRate, shouldEscalate, extractionHints, proposals }
+export function applyAdvice(results, advice, reason) // SOLO puede agregar un ESCALATE
+```
+El consejo entra después del motor y antes de la política. Nunca quita ni rebaja el
+resultado de una regla, y ningún umbral cambia sin que una persona apruebe la propuesta.
+Detalle y justificación en [AI-AND-LEARNING.md](AI-AND-LEARNING.md) y el ADR 0004.
+
 ## 4. Estructura de carpetas
 
 ```
@@ -145,6 +156,7 @@ src/rules        M3
 src/audit        M4
 src/approvals    M5
 src/i18n         M9 (catálogo, detección y formato por idioma)
+src/learning     M10 (memoria de casos, vectores y consejero)
 src/validators   M9 (international.js) y M8 (colombia.js y otros países)
 public/          M6 (HTML + JS sin build)
 data/            M1 (solo ficticio)

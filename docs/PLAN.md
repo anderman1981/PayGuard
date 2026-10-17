@@ -46,6 +46,7 @@ Detalle completo en [REQUIREMENTS.md](REQUIREMENTS.md).
 | M7 | Evaluación (autonomía/seguridad/precisión) + guion de demo | `fea/m7-eval` | OpenCode | M1, M3 |
 | M8 | Validadores regionales (Colombia: NIT/DV, CUFE, IVA, retenciones) | `fea/m8-colombia` | OpenCode | M3, M9 |
 | M9 | Multi-idioma (es/en/pt/fr/de/it) y validadores internacionales | `fea/m9-i18n` | Claude | M0 |
+| M10 | Aprendizaje continuo: memoria de casos y propuestas con aprobación | `fea/m10-learning` | Claude | M3 |
 
 Los módulos se construyen **en paralelo contra contratos fijos** (ARCHITECTURE.md §3). Nadie cambia un contrato sin un PR propio de contrato aprobado por el integrador.
 
