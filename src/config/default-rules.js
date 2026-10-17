@@ -13,7 +13,7 @@ export const DEFAULT_RULES = {
   duplicateWindowDays: 45,
   maxDaysOverdue: 30,
   // Tabla fija y explícita: el agente no consulta tasas en vivo.
-  fxToUSD: { USD: 1, COP: 1 / 4000, MXN: 1 / 18, ARS: 1 / 1000, EUR: 1.08 },
+  fxToUSD: { USD: 1, COP: 1 / 4000, MXN: 1 / 18, ARS: 1 / 1000 },
 };
 
 /**
