@@ -5,14 +5,20 @@
  * así el contenido de una factura nunca puede inyectar marcado.
  */
 import { money, counts, filterRows, parseRulesForm, metricTiles, TONE } from './lib.js';
+import { viewIngesta } from './ingesta.js';
+import { viewCorrida } from './corrida.js';
+import { createNotifier } from './notify.js';
+
+/** @type {ReturnType<typeof createNotifier>|null} */
+let notifier = null;
 
 const VIEWS = [
-  ['resumen', 'Resumen'], ['facturas', 'Facturas'], ['aprobaciones', 'Aprobaciones'],
-  ['reglas', 'Reglas'], ['auditoria', 'Auditoría'],
+  ['resumen', 'Resumen'], ['corrida', 'Hoy'], ['ingesta', 'Ingesta'], ['facturas', 'Facturas'],
+  ['aprobaciones', 'Aprobaciones'], ['reglas', 'Reglas'], ['auditoria', 'Auditoría'],
 ];
 
 const state = {
-  view: 'resumen', lang: 'es', query: '', outcome: 'ALL',
+  view: 'resumen', lang: 'es', query: '', outcome: 'ALL', uploadEnabled: false,
   /** @type {import('./lib.js').DecisionRow[]} */ decisions: [],
   metrics: { autonomyPct: 0, accuracyPct: null, unsafePayments: 0, total: 0 },
   rules: /** @type {Record<string, unknown>} */ ({}),
@@ -278,6 +284,7 @@ async function refresh() {
     api('/decisions'), api('/metrics'), api('/rules'), api('/audit'), api('/proposals'),
   ]);
   Object.assign(state, { decisions, metrics, rules, audit, proposals });
+  if (notifier) notifier.sync(state.decisions);
   render();
 }
 
@@ -296,7 +303,10 @@ function render() {
   view.textContent = '';
   if (state.notice) view.append(el('div', { class: `notice ${state.notice.tone}`, text: state.notice.text }));
   const builders = {
-    resumen: viewResumen, facturas: viewFacturas, aprobaciones: viewAprobaciones,
+    resumen: viewResumen,
+    corrida: () => viewCorrida({ el, api, state, setNotice, notify: (d) => notifier && notifier.sync(d) }),
+    ingesta: () => viewIngesta({ el, api, state, setNotice, refresh }),
+    facturas: viewFacturas, aprobaciones: viewAprobaciones,
     reglas: viewReglas, auditoria: viewAuditoria,
   };
   view.append(builders[state.view]());
@@ -308,6 +318,9 @@ async function start() {
     fetch('/data/invoices/manifest.json').then((r) => r.json()).catch(() => []),
   ]);
   state.invoices = manifest;
+  state.uploadEnabled = health.uploadEnabled === true;
+  notifier = createNotifier({ api });
+  notifier.mount();
   $('version').textContent = `PayGuard · modo ${health.mode}`;
 
   const lang = /** @type {HTMLSelectElement} */ ($('lang'));
