@@ -18,6 +18,8 @@ PayGuard revisa las facturas de una empresa y decide por ella cuáles **pagar**,
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Ramas, versionado, commits, gates |
 | [SECURITY.md](SECURITY.md) | Invariantes y políticas de seguridad |
 | [AGENTS.md](AGENTS.md) | Instrucciones para los agentes de IA |
+| [docs/DOC-RULE.md](docs/DOC-RULE.md) | Regla de documentación viva (obligatoria en cada interacción) |
+| [docs/BITACORA.md](docs/BITACORA.md) | Qué dejó hecho cada sesión |
 | [docs/adr/](docs/adr/) | Decisiones de arquitectura |
 
 ## Estado
@@ -27,7 +29,7 @@ PayGuard revisa las facturas de una empresa y decide por ella cuáles **pagar**,
 | M0 | Dominio, reglas, guardia de solo lectura, servidor, Docker, gobierno y gates | ✅ |
 | M1 | 30+ facturas ficticias (PDF, PNG, correo, chat) con decisión esperada | ⏳ |
 | M2 | Ingesta y extracción (LLM con respaldo + caché offline) | ⏳ |
-| M3 | Motor de reglas + política + pruebas de propiedades | ⏳ |
+| M3 | Motor de reglas R01–R12 + política + pruebas de propiedades | ✅ |
 | M4 | Registro de auditoría encadenado + explicaciones | ⏳ |
 | M5 | Cola de aprobación humana | ⏳ |
 | M6 | Interfaz: reglas, tablero, detalle, aprobaciones | ⏳ |

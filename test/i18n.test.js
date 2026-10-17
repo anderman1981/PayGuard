@@ -17,9 +17,9 @@ test('catálogo: toda clave tiene todos los idiomas', () => {
 test('traducción e interpolación', () => {
   assert.equal(t('outcome.PAY', 'es'), 'Pagada');
   assert.equal(t('outcome.PAY', 'de'), 'Bezahlt');
-  assert.equal(t('r04.fail', 'en', { name: 'Acme' }), '“Acme” is not on the allowed beneficiary list');
+  assert.equal(t('r04.notAllowed', 'en', { name: 'Acme' }), '“Acme” is not on the allowed beneficiary list');
   assert.equal(t('clave.inexistente', 'es'), 'clave.inexistente');
-  assert.equal(t('r04.fail', 'es', {}), '«{name}» no está en la lista de beneficiarios permitidos');
+  assert.equal(t('r04.notAllowed', 'es', {}), '«{name}» no está en la lista de beneficiarios permitidos');
 });
 
 test('normalización de etiquetas de idioma', () => {
