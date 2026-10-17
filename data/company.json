@@ -9,9 +9,9 @@
     { "id": "cp-04", "name": "DataPampa S.R.L.", "taxId": "30-71234567-8", "country": "AR", "currency": "USD", "bank": { "bankName": "Banco del Plata", "accountLast4": "7730" }, "allowed": true },
     { "id": "cp-05", "name": "CloudForge LLC", "taxId": "US-87-1234567", "country": "US", "currency": "USD", "bank": { "bankName": "First Liberty Bank", "accountLast4": "0042" }, "allowed": true },
     { "id": "cp-06", "name": "Diego Ramírez (contratista)", "taxId": "MX-RAMD900101", "country": "MX", "currency": "USD", "bank": { "bankName": "Banco Maya", "accountLast4": "5566" }, "allowed": true },
-    { "id": "cp-07", "name": "Oficinas Quindío S.A.S.", "taxId": "901333444-5", "country": "CO", "currency": "COP", "bank": { "bankName": "Banco Andino", "accountLast4": "3001" }, "allowed": true },
+    { "id": "cp-07", "name": "Oficinas Quindío S.A.S.", "taxId": "901333444-4", "country": "CO", "currency": "COP", "bank": { "bankName": "Banco Andino", "accountLast4": "3001" }, "allowed": true },
     { "id": "cp-08", "name": "LegalSur Abogados", "taxId": "30-79999888-1", "country": "AR", "currency": "ARS", "bank": { "bankName": "Banco del Plata", "accountLast4": "6120" }, "allowed": true },
-    { "id": "cp-09", "name": "Talento Remoto S.A.S.", "taxId": "902555666-7", "country": "CO", "currency": "USD", "bank": { "bankName": "Banco Andino", "accountLast4": "9090" }, "allowed": false }
+    { "id": "cp-09", "name": "Talento Remoto S.A.S.", "taxId": "902555666-9", "country": "CO", "currency": "USD", "bank": { "bankName": "Banco Andino", "accountLast4": "9090" }, "allowed": false }
   ],
   "contracts": [
     { "id": "CT-2026-001", "counterpartyId": "cp-01", "description": "Diseño UI mensual", "amount": 12000000, "currency": "COP", "tolerancePct": 0, "period": "monthly", "active": true },

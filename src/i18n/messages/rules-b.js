@@ -97,6 +97,18 @@ export const RULES_B = {
     pt: 'O código de moeda {value} não é ISO-4217', fr: 'Le code devise {value} n’est pas ISO-4217',
     de: 'Währungscode {value} ist kein ISO-4217', it: 'Il codice valuta {value} non è ISO-4217',
   },
+  'r13.name': {
+    es: 'Reglas del país', en: 'Country rules', pt: 'Regras do país',
+    fr: 'Règles du pays', de: 'Landesregeln', it: 'Regole del paese',
+  },
+  'r13.fail': {
+    es: 'La factura no cumple las reglas de {country}: {detail}',
+    en: 'The invoice does not meet {country} country rules: {detail}',
+    pt: 'A fatura não cumpre as regras de {country}: {detail}',
+    fr: 'La facture ne respecte pas les règles de {country} : {detail}',
+    de: 'Die Rechnung erfüllt die Regeln von {country} nicht: {detail}',
+    it: 'La fattura non rispetta le regole di {country}: {detail}',
+  },
   'r12.totals': {
     es: 'El total {got} no cuadra: subtotal e impuestos dan {expected}',
     en: 'Total {got} does not add up: subtotal plus tax gives {expected}',

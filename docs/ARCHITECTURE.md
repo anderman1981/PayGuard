@@ -74,7 +74,7 @@ export function validateExtraction(obj)
 | R10 | Cabe en el presupuesto del periodo | HOLD |
 | R11 | Hay saldo suficiente en la moneda | HOLD |
 | R12 | Datos de pago válidos: IBAN/BIC/ABA según el país, divisa ISO con sus decimales, cuadre de totales | ESCALATE |
-| R13 | (Regional, M8) Reglas del país del emisor, p. ej. NIT con dígito de verificación en Colombia | ESCALATE |
+| R13 | Reglas del país del emisor (`r13-regional.js`): hoy Colombia, con NIT, CUFE, IVA y cuadre | ESCALATE |
 | A01 | (M10, no es regla: consejo) Casos parecidos fueron rechazados por una persona | ESCALATE |
 
 Aritmética, conversión de moneda y fechas **siempre en código**, nunca en el LLM.

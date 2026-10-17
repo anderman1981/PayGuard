@@ -12,3 +12,4 @@ Una línea por sesión de trabajo. Ver [DOC-RULE.md](DOC-RULE.md).
 | 2026-10-17 | claude | fea/m1-dataset | 0.6.0 | M1: 32 facturas simuladas en 4 formatos reales (PDF y PNG escritos sin dependencias), manifiesto con decisión esperada y extracción dorada; el agente acierta el 100% del set |
 | 2026-10-17 | claude | fea/m2-extraction | 0.7.0 | M2: validador estricto de la salida del modelo, instrucción a prueba de manipulación, cadena de cuatro proveedores con interruptor y modo caché |
 | 2026-10-17 | claude | fea/m6-ui | 0.8.0 | M6: interfaz completa de cinco vistas, sin build ni dependencias, verificada en navegador real con el set de 32 facturas |
+| 2026-10-17 | claude | fea/m8-colombia | 0.9.0 | M8: regla R13 con validadores de Colombia (NIT con dígito de verificación, CUFE, IVA y cuadre); NIT ficticios corregidos para que sean coherentes |

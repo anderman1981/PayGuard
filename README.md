@@ -35,7 +35,7 @@ PayGuard revisa las facturas de una empresa y decide por ella cuáles **pagar**,
 | M5 | Cola de aprobación humana + API completa | ✅ |
 | M6 | Interfaz: resumen, facturas, aprobaciones, reglas y auditoría | ✅ |
 | M7 | Métricas de autonomía/seguridad + demo | ⏳ |
-| M8 | Validadores regionales (Colombia y otros) | ⏳ |
+| M8 | Validadores regionales: Colombia (NIT, CUFE, IVA, cuadre) | ✅ |
 | M9 | Multi-idioma y validadores internacionales (IBAN, BIC, ABA, divisas) | ✅ |
 | M10 | Aprendizaje continuo: memoria de casos (RAG) y propuestas con aprobación humana | ✅ |
 

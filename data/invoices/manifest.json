@@ -93,7 +93,7 @@
       "source": "pdf",
       "invoiceNumber": "EF-0001",
       "counterpartyName": "Empresa Fantasma Ltda.",
-      "counterpartyTaxId": "800999111-2",
+      "counterpartyTaxId": "800999111-9",
       "amount": 2400,
       "currency": "USD",
       "issueDate": "2026-10-05",
@@ -111,7 +111,7 @@
         "issueDate": 0.96,
         "invoiceNumber": 0.95
       },
-      "rawText": "FACTURA EF-0001\n\nProveedor: Empresa Fantasma Ltda.\nNIT/ID: 800999111-2\nFecha: 2026-10-05    Vence: 2026-10-25\nContrato: -\n\nConcepto: Servicios profesionales\nTotal a pagar: 2,400 USD\nCuenta: ****1111"
+      "rawText": "FACTURA EF-0001\n\nProveedor: Empresa Fantasma Ltda.\nNIT/ID: 800999111-9\nFecha: 2026-10-05    Vence: 2026-10-25\nContrato: -\n\nConcepto: Servicios profesionales\nTotal a pagar: 2,400 USD\nCuenta: ****1111"
     }
   },
   {
@@ -132,7 +132,7 @@
       "source": "chat",
       "invoiceNumber": "TR-0450",
       "counterpartyName": "Talento Remoto S.A.S.",
-      "counterpartyTaxId": "902555666-7",
+      "counterpartyTaxId": "902555666-9",
       "amount": 3200,
       "currency": "USD",
       "issueDate": "2026-10-06",
@@ -818,7 +818,7 @@
       "source": "pdf",
       "invoiceNumber": "OQ-2026-10",
       "counterpartyName": "Oficinas Quindio S.A.S.",
-      "counterpartyTaxId": "901333444-5",
+      "counterpartyTaxId": "901333444-4",
       "amount": 8500000,
       "currency": "COP",
       "issueDate": "2026-10-01",
@@ -836,7 +836,7 @@
         "issueDate": 0.96,
         "invoiceNumber": 0.95
       },
-      "rawText": "FACTURA OQ-2026-10\n\nProveedor: Oficinas Quindio S.A.S.\nNIT/ID: 901333444-5\nFecha: 2026-10-01    Vence: 2026-10-15\nContrato: CT-2026-007\n\nConcepto: Arriendo oficina Medellin\nTotal a pagar: 8,500,000 COP\nCuenta: ****3001"
+      "rawText": "FACTURA OQ-2026-10\n\nProveedor: Oficinas Quindio S.A.S.\nNIT/ID: 901333444-4\nFecha: 2026-10-01    Vence: 2026-10-15\nContrato: CT-2026-007\n\nConcepto: Arriendo oficina Medellin\nTotal a pagar: 8,500,000 COP\nCuenta: ****3001"
     }
   },
   {
