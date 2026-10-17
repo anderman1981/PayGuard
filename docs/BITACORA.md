@@ -15,3 +15,4 @@ Una línea por sesión de trabajo. Ver [DOC-RULE.md](DOC-RULE.md).
 | 2026-10-17 | claude | fea/m8-colombia | 0.9.0 | M8: regla R13 con validadores de Colombia (NIT con dígito de verificación, CUFE, IVA y cuadre); NIT ficticios corregidos para que sean coherentes |
 | 2026-10-17 | claude | fea/m9-upload | 0.11.0 | RF-09: endpoint POST /api/upload para subir factura real; validación PAYGUARD_ALLOW_UPLOAD=1; procesamiento en memoria con motor de reglas y explicación |
 | 2026-10-17 | claude | fix/m9-upload | 0.10.1 | RF-09: arregla el handler getProposals faltante y el postUpload roto (variable file inexistente, extractInvoice sin importar, factura iterada como arreglo); se agregan pruebas de upload |
+| 2026-10-17 | claude | fix/ci-ladder-guard | 0.10.2 | CI: guardián de escalera de ramas (main←staging, staging←dev, dev←fea/fix) que rechaza PRs con origen incorrecto |

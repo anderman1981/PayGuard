@@ -3,6 +3,9 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado según CONTRIBUTING.md §2.
 
 ## [Unreleased]
+### Added
+- CI: job `ladder` que hace cumplir la escalera de ramas en cada PR — `main` solo recibe de `staging`, `staging` solo de `dev`, `dev` solo de `fea/*` o `fix/*`; rechaza el PR si el origen no corresponde.
+
 ### Fixed
 - RF-09: se implementa el handler `getProposals` que faltaba en `src/api/handlers.js`; `server.js` y las pruebas ya lo invocaban y rompían el arranque de `/api/proposals` y la suite.
 - RF-09: `postUpload` dejaba de funcionar por una variable `file` inexistente (el parámetro era `fileDoc`), por no importar `extractInvoice` y por iterar la factura única como si fuera un arreglo; ahora extrae, evalúa y registra la factura correctamente y valida que el payload traiga un archivo.
