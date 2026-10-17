@@ -14,7 +14,7 @@ PayGuard revisa las facturas de una empresa y decide por ella cuáles **pagar**,
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arquitectura y **contratos entre módulos** |
 | [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) | Requerimientos funcionales, no funcionales, hardware |
 | [docs/STACK.md](docs/STACK.md) | Tecnologías, paquetes y herramientas |
-| [docs/COLOMBIA.md](docs/COLOMBIA.md) | Validación de facturas colombianas |
+| [docs/VALIDATORS.md](docs/VALIDATORS.md) | Validación de datos de pago e idioma (mundial + regional) |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Ramas, versionado, commits, gates |
 | [SECURITY.md](SECURITY.md) | Invariantes y políticas de seguridad |
 | [AGENTS.md](AGENTS.md) | Instrucciones para los agentes de IA |
@@ -32,7 +32,8 @@ PayGuard revisa las facturas de una empresa y decide por ella cuáles **pagar**,
 | M5 | Cola de aprobación humana | ⏳ |
 | M6 | Interfaz: reglas, tablero, detalle, aprobaciones | ⏳ |
 | M7 | Métricas de autonomía/seguridad + demo | ⏳ |
-| M8 | Validadores de facturas colombianas | ⏳ |
+| M8 | Validadores regionales (Colombia y otros) | ⏳ |
+| M9 | Multi-idioma y validadores internacionales (IBAN, BIC, ABA, divisas) | ✅ |
 
 ## Correr
 

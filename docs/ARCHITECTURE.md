@@ -73,7 +73,8 @@ export function validateExtraction(obj)
 | R09 | Monto en USD ≤ máximo por pago (HOLD) y ≤ umbral de aprobación (ESCALATE) | HOLD / ESCALATE |
 | R10 | Cabe en el presupuesto del periodo | HOLD |
 | R11 | Hay saldo suficiente en la moneda | HOLD |
-| R12 | (Solo CO, M8) NIT con dígito de verificación válido, IVA y total cuadran | ESCALATE |
+| R12 | Datos de pago válidos: IBAN/BIC/ABA según el país, divisa ISO con sus decimales, cuadre de totales | ESCALATE |
+| R13 | (Regional, M8) Reglas del país del emisor, p. ej. NIT con dígito de verificación en Colombia | ESCALATE |
 
 Aritmética, conversión de moneda y fechas **siempre en código**, nunca en el LLM.
 
@@ -84,7 +85,7 @@ export class AuditLog {
   async verify()             // => { ok: boolean, brokenAt: number|null }
   list()                     // => entradas en orden
 }
-export function explain(decision) // => texto en español legible sin abrir el código
+export function explain(decision, lang) // => texto en el idioma dado, legible sin abrir el código
 ```
 Usa `crypto.subtle` (funciona en Node y en el navegador).
 
@@ -98,7 +99,7 @@ Una factura FRENADA **no** se puede aprobar: solo cambiando las reglas y reproce
 ### API HTTP (servidor y UI)
 | Método | Ruta | Uso |
 |---|---|---|
-| GET | `/api/health` | estado, modo, versión |
+| GET | `/api/health` | estado, modo, versión, idiomas disponibles |
 | GET / PUT | `/api/rules` | leer / editar reglas (PUT valida y audita) |
 | GET | `/api/company` | empresa ficticia |
 | GET | `/api/invoices` | facturas del set con su estado |
@@ -108,6 +109,15 @@ Una factura FRENADA **no** se puede aprobar: solo cambiando las reglas y reproce
 | GET | `/api/audit` · `/api/audit/verify` | registro y verificación de la cadena |
 | GET | `/api/metrics` | autonomía, seguridad, precisión |
 | POST | `/api/upload` | subir factura (solo si `PAYGUARD_ALLOW_UPLOAD=1`, nunca en la demo pública) |
+
+### M9 · Idioma — `src/i18n/`
+```js
+export function resolveLang({ requested, acceptLanguage, document, company }) // => Lang
+export function t(key, lang, vars)      // texto del catálogo, con {marcadores}
+export function money(amount, currency, lang) · date(isoDate, lang)
+export function detectLang(text)        // => Lang | null  (heurístico, sin modelo)
+```
+Toda respuesta de la API acepta `?lang=` y respeta `Accept-Language`. Ningún texto visible se escribe dentro de la lógica: siempre pasa por `t()`.
 
 ## 4. Estructura de carpetas
 
@@ -119,7 +129,8 @@ src/extraction   M2
 src/rules        M3
 src/audit        M4
 src/approvals    M5
-src/validators   M8 (colombia.js)
+src/i18n         M9 (catálogo, detección y formato por idioma)
+src/validators   M9 (international.js) y M8 (colombia.js y otros países)
 public/          M6 (HTML + JS sin build)
 data/            M1 (solo ficticio)
 scripts/         calidad, versionado, evaluación

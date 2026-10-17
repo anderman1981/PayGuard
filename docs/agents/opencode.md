@@ -11,7 +11,7 @@ Construye `data/invoices/` según el contrato de `docs/ARCHITECTURE.md` §3 (M1)
 - Pruebas `test/dataset.test.js`: manifest válido, archivos existen, ids únicos, todas las trampas presentes, ningún dato real.
 
 ## Tarea 2 · M8 Colombia — rama `fea/m8-colombia`
-Implementa `src/validators/colombia.js` siguiendo `docs/COLOMBIA.md` y la regla R12. Pruebas con NIT válidos e inválidos generados (nunca reales), IVA y totales.
+Implementa `src/validators/colombia.js` siguiendo `docs/VALIDATORS.md` y la regla R12. Pruebas con NIT válidos e inválidos generados (nunca reales), IVA y totales.
 
 ## Tarea 3 · M7 Evaluación — rama `fea/m7-eval` (cuando M1 y M3 estén en `dev`)
 `scripts/eval.js` y `src/metrics.js`: autonomía, seguridad (pagos indebidos = 0), precisión vs `expected`, matriz de confusión. Salida en consola y `/api/metrics`.
