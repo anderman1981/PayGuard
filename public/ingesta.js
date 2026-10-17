@@ -30,7 +30,6 @@ export function viewIngesta(ctx) {
     ['capturar', 'Capturar', () => sectionManual(ctx, result)],
     ['json', 'Pegar JSON', () => sectionJson(ctx, result)],
     ['subir', 'Subir archivo', () => sectionUpload(ctx, result)],
-    ['set', 'Set de ejemplo', () => sectionSet(ctx, result)],
   ];
   let active = 'capturar';
   const nav = el('div', { class: 'tabs', role: 'tablist', 'aria-label': 'Formas de ingresar facturas' });
@@ -58,6 +57,7 @@ export function viewIngesta(ctx) {
     }),
     nav, body,
     el('div', { class: 'stack' }, [el('h2', { text: 'Resultado' }), result]),
+    sectionSet(ctx),
   ]);
 }
 
@@ -175,8 +175,8 @@ function sectionUpload(ctx, box) {
   return el('div', { class: 'stack' }, [...head, el('div', { class: 'topbar' }, [file, subir])]);
 }
 
-/** @param {IngestaCtx} ctx @param {HTMLElement} box */
-function sectionSet(ctx, box) {
+/** @param {IngestaCtx} ctx */
+function sectionSet(ctx) {
   const { el, state } = ctx;
   const byId = new Map(state.decisions.map((d) => [d.invoiceId, d]));
   const rows = state.invoices.map((i) => {
@@ -190,8 +190,9 @@ function sectionSet(ctx, box) {
       el('td', {}, [pill]),
     ]);
   });
+  const setResult = el('div', { id: 'set-result' });
   const cargar = el('button', { class: 'btn ghost', type: 'button', text: 'Cargar y procesar el set' });
-  cargar.addEventListener('click', () => evaluate(ctx, box, state.invoices.map((i) => i.extraction)));
+  cargar.addEventListener('click', () => evaluate(ctx, setResult, state.invoices.map((i) => i.extraction)));
   return el('div', { class: 'stack' }, [
     el('h2', { text: 'Facturas del set de ejemplo' }),
     el('p', { class: 'muted', text: `${state.invoices.length} facturas simuladas para probar el agente.` }),
@@ -200,5 +201,6 @@ function sectionSet(ctx, box) {
       el('thead', {}, [el('tr', {}, ['Factura', 'Beneficiario', 'Estado'].map((h) => el('th', { text: h })))]),
       el('tbody', {}, rows.length ? rows : [el('tr', {}, [el('td', { colspan: '3', class: 'muted', text: 'Sin set cargado.' })])]),
     ]),
+    setResult,
   ]);
 }

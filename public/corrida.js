@@ -99,8 +99,8 @@ async function runNow(api, state, setNotice) {
   }
 }
 
-/** @param {{ el: any, lang: string }} ui @param {Record<string, any>} row */
-function rowNode({ el, lang }, row) {
+/** @param {{ el: any, lang: string, onOpen?: ((id: string) => void)|null }} ui @param {Record<string, any>} row */
+function rowNode({ el, lang, onOpen }, row) {
   const st = STATUS[/** @type {keyof typeof STATUS} */ (row.status)] ?? STATUS.PENDIENTE;
   const tag = noveltyTag(row.outcome);
   const novelty = tag
@@ -114,23 +114,63 @@ function rowNode({ el, lang }, row) {
     el('td', {}, [el('span', { class: `pill ${st.tone}`, text: st.text })]),
     el('td', {}, [novelty]),
   ];
-  const tr = el('tr', {}, cells);
+  const tr = el('tr', { tabindex: '0' }, cells);
   if (row.explanation) tr.setAttribute('title', row.explanation);
+  if (onOpen && row.outcome) {
+    tr.style.cursor = 'pointer';
+    tr.addEventListener('click', () => /** @type {Function} */ (onOpen)(row.id));
+    tr.addEventListener('keydown', (/** @type {KeyboardEvent} */ e) => {
+      if (e.key === 'Enter') /** @type {Function} */ (onOpen)(row.id);
+    });
+  }
   return tr;
 }
 
 /**
  * @param {{ el: any, api: any, state: any, setNotice: (t: string, tone: string) => void,
- *   notify?: (d: any[]) => void }} ctx
+ *   notify?: (d: any[]) => void, openDrawer?: (id: string) => void }} ctx
  */
 export function viewCorrida(ctx) {
   const { el, api, state, setNotice } = ctx;
+  const onOpen = ctx.openDrawer ?? null;
   notify = ctx.notify ?? null;
   ensureSource(api);
 
   const btn = el('button', { class: 'btn', type: 'button', text: 'Correr ahora' });
+  const demoBtn = el('button', { class: 'btn ghost', type: 'button', text: 'Ejecutar set demo' });
   const status = el('span', { class: 'muted' });
   btn.addEventListener('click', () => runNow(api, state, setNotice));
+  demoBtn.addEventListener('click', async () => {
+    if (running) return;
+    running = true;
+    if (repaint) repaint();
+    try {
+      const manifest = await fetch('/data/invoices/manifest.json').then((r) => r.json()).catch(() => []);
+      for (const inv of manifest) {
+        rows.set(inv.id, { ...inv.extraction, id: inv.id, status: 'PENDIENTE' });
+      }
+      if (repaint) repaint();
+      const invoices = manifest.map((/** @type {any} */ i) => i.extraction);
+      const res = await api('/run', { method: 'POST', body: JSON.stringify({ invoices }) });
+      for (const d of res) {
+        const row = rows.get(d.invoiceId) ?? { id: d.invoiceId };
+        rows.set(d.invoiceId, {
+          ...row, status: d.outcome, outcome: d.outcome,
+          summary: d.summary, failed: d.failed, explanation: d.explanation,
+        });
+        const existing = state.decisions.find((/** @type {any} */ x) => x.invoiceId === d.invoiceId);
+        if (existing) Object.assign(existing, d); else state.decisions.push(d);
+      }
+      if (notify) notify(state.decisions);
+      const novedades = res.filter((/** @type {any} */ d) => d.outcome !== 'PAY').length;
+      setNotice(`Set demo: ${res.length} factura(s), ${novedades} con novedad.`, novedades ? 'wait' : 'ok');
+    } catch (err) {
+      setNotice(/** @type {Error} */ (err).message, 'stop');
+    } finally {
+      running = false;
+      if (repaint) repaint();
+    }
+  });
 
   const body = el('tbody', { id: 'corrida-rows' });
   const table = el('table', {}, [
@@ -142,7 +182,9 @@ export function viewCorrida(ctx) {
     const el2 = document.getElementById('corrida-rows');
     if (!el2) return;
     btn.toggleAttribute('disabled', running);
+    demoBtn.toggleAttribute('disabled', running);
     btn.textContent = running ? 'Corriendo…' : 'Correr ahora';
+    demoBtn.textContent = running ? 'Corriendo…' : 'Ejecutar set demo';
     const list = [...rows.values()];
     const done = list.filter((r) => r.outcome).length;
     status.textContent = list.length === 0
@@ -150,17 +192,17 @@ export function viewCorrida(ctx) {
       : `${list.length} con pago para hoy · ${done} decidida(s)`;
     el2.textContent = '';
     if (list.length === 0) {
-      const vacio = 'Sin facturas para hoy. El disparador de las 07:00 también las mostrará aquí en vivo.';
+      const vacio = 'Sin facturas para hoy. Usa "Ejecutar set demo" o espera el disparador de las 07:00.';
       el2.append(el('tr', {}, [el('td', { colspan: '6', class: 'muted', text: vacio })]));
       return;
     }
-    for (const row of list) el2.append(rowNode({ el, lang: state.lang }, row));
+    for (const row of list) el2.append(rowNode({ el, lang: state.lang, onOpen }, row));
   };
 
   const intro = 'Las facturas que vencen hoy o están pendientes. El agente las evalúa en vivo; nunca mueve dinero, solo decide y explica.';
   const head = el('div', { class: 'stack' }, [
     el('p', { class: 'muted', text: intro }),
-    el('div', { class: 'topbar' }, [btn, status]),
+    el('div', { class: 'topbar' }, [btn, demoBtn, status]),
     table,
   ]);
 

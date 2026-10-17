@@ -7,7 +7,7 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createState, ruleContext } from './src/api/state.js';
+import { createState, resetState, ruleContext } from './src/api/state.js';
 import { resolveLang } from './src/i18n/index.js';
 import * as api from './src/api/handlers.js';
 import { loadDataset, nextDailyRunMs } from './src/daily/daily-run.js';
@@ -119,6 +119,11 @@ async function route(req, url) {
   }
   if (p === '/api/daily-run' && method === 'POST') {
     return api.postDailyRun(state, await readBody(req), lang, ctx, { dataset: DATASET, onEvent: broadcastEvent, delay: dailyDelay });
+  }
+  if (p === '/api/reset' && method === 'POST') {
+    resetState(state, new URL('./data/company.json', import.meta.url));
+    broadcastEvent({ type: 'reset' });
+    return { status: 200, body: { ok: true, message: 'Estado reiniciado. Listo para nueva prueba.' } };
   }
   if (p.startsWith('/api/')) return { status: 404, body: { error: 'no encontrado' } };
   return null;
