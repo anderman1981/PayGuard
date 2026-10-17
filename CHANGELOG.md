@@ -3,6 +3,9 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado según CONTRIBUTING.md §2.
 
 ## [Unreleased]
+### Changed
+- UI: la vista **Ingesta** separa sus cuatro formas de ingresar facturas en **tabs internas** (Capturar, Pegar JSON, Subir archivo, Set de ejemplo), con la caja de Resultado compartida debajo; antes estaban apiladas.
+
 ### Added
 - M14 Corrida diaria: nueva vista "Hoy" en la UI que muestra las facturas con pago para hoy y las corre con actualización **en vivo** del estado (PENDIENTE → evaluando → Pagada/Frenada/Pendiente) vía Server-Sent Events (`GET /api/events`, sin dependencias). Las facturas con novedad (frenada o escalada) quedan con etiqueta visible y disparan el aviso al humano (reusa el notificador de M11). Nuevos endpoints `GET` y `POST /api/daily-run` (+ handlers `getDailyRun`/`postDailyRun`) y módulo `src/daily/daily-run.js` (`selectDueInvoices`, `runDailyRun`, `loadDataset`, `nextDailyRunMs`); UI en `public/corrida.js`. Cero pagos reales.
 - M14 Disparador 07:00: con `PAYGUARD_DAILY=1`, `server.js` programa la corrida diaria a las 07:00 de `PAYGUARD_TZ`/`TZ` con `setTimeout` nativo (cero dependencias) y se reprograma cada día; `PAYGUARD_DAILY_STEP_MS` pacea la visualización. Apagado por defecto y en pruebas; en producción iría un cron real (documentado en `docs/API.md`).
