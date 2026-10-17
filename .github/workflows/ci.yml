@@ -1,0 +1,34 @@
+name: CI
+on:
+  push:
+    branches: [main, staging, dev, 'fea/**', 'fix/**']
+  pull_request:
+    branches: [main, staging, dev]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: Calidad y seguridad estática
+        run: npm run quality
+      - name: Pruebas con cobertura
+        run: npm run coverage
+      - name: Tipos
+        run: npm run typecheck
+      - name: Versión de la rama
+        if: startsWith(github.head_ref || github.ref_name, 'fea/') || startsWith(github.head_ref || github.ref_name, 'fix/')
+        run: |
+          git fetch origin dev:dev || true
+          npm run version:check
+      - name: Imagen Docker
+        run: docker build -t payguard:ci .
+      - name: Arranque y healthcheck
+        run: |
+          docker run -d --name pg -p 3000:3000 payguard:ci
+          for i in $(seq 1 20); do curl -fs localhost:3000/api/health && break || sleep 1; done
+          curl -fs localhost:3000/api/health | grep -q '"ok":true'
+          docker rm -f pg

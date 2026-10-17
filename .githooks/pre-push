@@ -1,0 +1,10 @@
+#!/bin/sh
+# Protege las ramas de oro: nada de push directo (CONTRIBUTING.md §1).
+branch=$(git branch --show-current)
+case "$branch" in
+  main|staging|dev)
+    echo "✗ Push directo a '$branch' prohibido. Trabaja en fea/* o fix/* y abre un PR."
+    exit 1 ;;
+esac
+npm run --silent check || exit 1
+npm run --silent version:check || exit 1

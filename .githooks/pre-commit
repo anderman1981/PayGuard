@@ -1,0 +1,3 @@
+#!/bin/sh
+# Gates antes de cada commit: calidad + pruebas con cobertura.
+npm run --silent check || { echo "✗ Gates en rojo. El commit se detuvo."; exit 1; }

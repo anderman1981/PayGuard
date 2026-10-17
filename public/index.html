@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PayGuard</title>
+  <style>
+    :root { --bed:#f4f5f7; --field:#fff; --ink:#15171c; --ink-2:#5b6070; --accent:#4338ca; --seam:#e6e8ee; }
+    @media (prefers-color-scheme: dark) { :root { --bed:#0f1013; --field:#17191e; --ink:#eceef2; --ink-2:#9aa0ad; --accent:#818cf8; --seam:#262a31; } }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bed); color:var(--ink); }
+    main { max-width:720px; margin:12vh auto; padding:0 16px; }
+    .card { background:var(--field); border-radius:20px; padding:28px; border:1px solid var(--seam); }
+    h1 { font-size:22px; margin:0 0 8px; } p { color:var(--ink-2); line-height:1.5; }
+    .pill { display:inline-block; background:var(--accent); color:#fff; border-radius:999px; padding:6px 14px; font-size:14px; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="card">
+      <h1>PayGuard</h1>
+      <p>Agente que decide qué facturas pagar, frenar o escalar dentro de las reglas de la empresa. Prototipo para el reto Blinka · Hackathon 30X.</p>
+      <p id="status">Comprobando servicio…</p>
+      <span class="pill">M0 · en construcción</span>
+    </div>
+  </main>
+  <script type="module">
+    const el = document.getElementById('status');
+    try {
+      const [h, c] = await Promise.all([fetch('/api/health').then(r => r.json()), fetch('/api/company').then(r => r.json())]);
+      el.textContent = `Servicio activo (modo ${h.mode}) · Empresa ficticia: ${c.company.name} · ${c.counterparties.length} contrapartes`;
+    } catch { el.textContent = 'No se pudo contactar la API.'; }
+  </script>
+</body>
+</html>

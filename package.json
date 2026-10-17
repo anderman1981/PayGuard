@@ -1,0 +1,23 @@
+{
+  "name": "payguard",
+  "version": "0.1.0",
+  "description": "Agente que decide qué facturas pagar, frenar o escalar dentro de reglas configurables. Reto Blinka · Hackathon 30X.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "setup": "git config core.hooksPath .githooks && echo 'hooks activados'",
+    "test": "node --test test/*.test.js",
+    "coverage": "node --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-branches=85 --test-coverage-functions=90 test/*.test.js",
+    "quality": "node scripts/quality.js",
+    "typecheck": "npx -y typescript@5.9.2 --noEmit -p jsconfig.json",
+    "check": "npm run quality && npm run coverage",
+    "version:show": "node scripts/version.js show",
+    "version:bump": "node scripts/version.js bump",
+    "version:check": "node scripts/version.js check",
+    "start": "node server.js"
+  },
+  "license": "MIT"
+}
