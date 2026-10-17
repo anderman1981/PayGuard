@@ -68,6 +68,17 @@ function viewResumen() {
     el('b', { text: t.value }), el('span', { text: t.label }),
   ])));
 
+  const empty = state.decisions.length === 0
+    ? el('div', { class: 'empty-state stack' }, [
+      el('p', { class: 'muted', text: '¿Listo para empezar? Procesa tus primeras facturas en 3 pasos:' }),
+      el('ol', {}, [
+        el('li', { text: '1. Ve a la pestaña Ingesta y carga un archivo de facturas.' }),
+        el('li', { text: '2. La corrida diaria (o el botón "Ejecutar ahora") las evalúa automáticamente.' }),
+        el('li', { text: '3. Vuelve aquí para ver el resumen, aprobar pendientes y revisar el historial.' }),
+      ]),
+    ])
+    : null;
+
   const prop = el('div', { class: 'stack' }, [
     el('h2', { text: 'Propuestas de ajuste' }),
     el('p', {
@@ -81,7 +92,7 @@ function viewResumen() {
         el('p', { text: String(p.rationale) }),
       ]))),
   ]);
-  return el('div', {}, [grid, prop]);
+  return el('div', {}, [empty, grid, prop].filter(Boolean));
 }
 
 function viewFacturas() {

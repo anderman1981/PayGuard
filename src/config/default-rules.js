@@ -6,14 +6,14 @@
 export const DEFAULT_RULES = {
   humanApprovalAboveUSD: 5000,
   maxPerPaymentUSD: 20000,
-  periodBudgetUSD: 48000,
+  periodBudgetUSD: 80000,
   allowedCurrencies: ['USD', 'COP', 'MXN', 'ARS'],
   allowedCountries: ['US', 'CO', 'MX', 'AR'],
   minExtractionConfidence: 0.85,
   duplicateWindowDays: 45,
   maxDaysOverdue: 30,
   // Tabla fija y explícita: el agente no consulta tasas en vivo.
-  fxToUSD: { USD: 1, COP: 1 / 4000, MXN: 1 / 18, ARS: 1 / 1000, EUR: 1.08 },
+  fxToUSD: { USD: 1, COP: 1 / 4000, MXN: 1 / 18, ARS: 1 / 1000 },
 };
 
 /**

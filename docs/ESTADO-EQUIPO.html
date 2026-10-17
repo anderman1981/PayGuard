@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayGuard · Estado del equipo</title>
+<style>
+:root {
+  --bg: #f4f5f7; --panel: #fff; --ink: #15171c; --ink-2: #5b6070; --ink-3: #8a90a0;
+  --seam: #e6e8ee; --accent: #4338ca; --ok: #0f7b4f; --ok-bg: #e7f6ee;
+  --warn: #9a6300; --warn-bg: #fdf3e2; --stop: #b42318; --stop-bg: #fdeceb;
+  --plus: #1d4ed8; --plus-bg: #eff6ff;
+  --r: 14px; --r-sm: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1013; --panel: #17191e; --ink: #eceef2; --ink-2: #9aa0ad; --ink-3: #6f7686;
+    --seam: #262a31; --accent: #818cf8;
+    --ok: #4ade80; --ok-bg: #11291d; --warn: #fcd34d; --warn-bg: #2a2110;
+    --stop: #fca5a5; --stop-bg: #2a1414; --plus: #93c5fd; --plus-bg: #172554;
+  }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; padding: 28px 16px 60px; }
+.wrap { max-width: 860px; margin: 0 auto; }
+header { margin-bottom: 32px; }
+header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+header p { color: var(--ink-2); font-size: 14px; margin-top: 4px; }
+.section { margin-bottom: 32px; }
+.section-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); margin-bottom: 12px; }
+h2 { font-size: 17px; font-weight: 600; margin-bottom: 14px; }
+
+/* Metric tiles */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+.tile { background: var(--panel); border: 1px solid var(--seam); border-radius: var(--r-sm); padding: 14px 16px; }
+.tile .val { font-size: 26px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+.tile .lbl { color: var(--ink-2); font-size: 12px; margin-top: 5px; }
+.tile.ok .val { color: var(--ok); }
+.tile.warn .val { color: var(--warn); }
+.tile.info .val { color: var(--accent); }
+
+/* Requirement rows */
+.req-group { background: var(--panel); border: 1px solid var(--seam); border-radius: var(--r); overflow: hidden; margin-bottom: 10px; }
+.req-group-head { padding: 10px 16px; font-size: 13px; font-weight: 600; border-bottom: 1px solid var(--seam); }
+.req-row { display: flex; gap: 12px; align-items: flex-start; padding: 11px 16px; border-bottom: 1px solid var(--seam); }
+.req-row:last-child { border-bottom: none; }
+.badge { display: inline-block; border-radius: 999px; padding: 3px 10px; font-size: 11px; font-weight: 600; white-space: nowrap; flex-shrink: 0; margin-top: 1px; }
+.badge.done { background: var(--ok-bg); color: var(--ok); }
+.badge.partial { background: var(--warn-bg); color: var(--warn); }
+.badge.missing { background: var(--stop-bg); color: var(--stop); }
+.badge.plus { background: var(--plus-bg); color: var(--plus); }
+.req-content { flex: 1; }
+.req-content strong { font-size: 14px; font-weight: 500; }
+.req-content span { display: block; color: var(--ink-2); font-size: 12.5px; margin-top: 2px; line-height: 1.45; }
+
+/* Tasks */
+.tasks { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 640px) { .tasks { grid-template-columns: 1fr; } }
+.task-card { background: var(--panel); border: 1px solid var(--seam); border-radius: var(--r); padding: 18px; }
+.task-card h3 { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.persona { border-radius: 999px; padding: 3px 10px; font-size: 11px; font-weight: 600; }
+.p1 { background: #EEEDFE; color: #3C3489; }
+.p2 { background: #E1F5EE; color: #085041; }
+.task-list { list-style: none; display: grid; gap: 8px; }
+.task-list li { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; color: var(--ink-2); }
+.task-list li label { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; width: 100%; }
+.task-list li input[type=checkbox] { margin-top: 3px; accent-color: var(--accent); flex-shrink: 0; }
+.task-list li.checked span { text-decoration: line-through; opacity: 0.5; }
+.tag-blocker { background: var(--stop-bg); color: var(--stop); border-radius: 4px; font-size: 10px; font-weight: 600; padding: 1px 6px; white-space: nowrap; }
+
+/* Code */
+pre { background: #1a1a1a; color: #e2e8f0; border-radius: var(--r-sm); padding: 16px; font: 13px/1.6 ui-monospace, "SF Mono", Menlo, monospace; overflow-x: auto; margin-top: 10px; }
+
+/* Branches */
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--seam); }
+th { color: var(--ink-3); font-weight: 500; font-size: 12px; }
+.mono { font-family: ui-monospace, monospace; font-size: 12.5px; }
+
+footer { margin-top: 40px; color: var(--ink-3); font-size: 12px; border-top: 1px solid var(--seam); padding-top: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>PayGuard · Estado del equipo</h1>
+  <p>Reto Blinka: <em>Agentes que pagan por la empresa</em> · Hackathon 30X · v0.13.0 · 17 oct 2026</p>
+</header>
+
+<div class="section">
+  <div class="section-label">Métricas actuales</div>
+  <div class="tiles">
+    <div class="tile ok"><div class="val">0</div><div class="lbl">Pagos indebidos</div></div>
+    <div class="tile ok"><div class="val">100%</div><div class="lbl">Precisión del set</div></div>
+    <div class="tile warn"><div class="val">65.6%</div><div class="lbl">Autonomía · meta 75%</div></div>
+    <div class="tile ok"><div class="val">171</div><div class="lbl">Pruebas pasadas</div></div>
+    <div class="tile ok"><div class="val">32</div><div class="lbl">Facturas simuladas</div></div>
+    <div class="tile info"><div class="val">0.13.0</div><div class="lbl">Versión en staging</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Cobertura del reto Blinka</div>
+
+  <div class="req-group">
+    <div class="req-group-head" style="background:var(--ok-bg);color:var(--ok);">✅ Listo — cumple el reto</div>
+    <div class="req-row"><span class="badge done">✓</span><div class="req-content"><strong>Leer factura y extraer datos (a quién, cuánto, moneda, cuándo)</strong><span>PDF, PNG, correo, chat · 4 idiomas · cadena de LLMs con caché sin red</span></div></div>
+    <div class="req-row"><span class="badge done">✓</span><div class="req-content"><strong>Decidir según reglas configurables</strong><span>R01–R13 · política determinista PAY / HOLD / ESCALATE · nunca mueve dinero</span></div></div>
+    <div class="req-row"><span class="badge done">✓</span><div class="req-content"><strong>Registrar cada decisión: pagó, frenó, escaló y por qué</strong><span>Auditoría encadenada SHA-256 · explicaciones en 6 idiomas · verificación de integridad</span></div></div>
+    <div class="req-row"><span class="badge done">✓</span><div class="req-content"><strong>Pedir permiso a una persona cuando algo se sale de las reglas</strong><span>Cola de aprobación humana · re-validación al aprobar · una factura frenada no se puede aprobar aquí</span></div></div>
+    <div class="req-row"><span class="badge done">✓</span><div class="req-content"><strong>Pantalla con reglas, resumen y estado de cada factura</strong><span>6 vistas: Resumen, Facturas, Aprobaciones, Reglas, Auditoría, Ingesta</span></div></div>
+    <div class="req-row"><span class="badge done">✓</span><div class="req-content"><strong>Casos trampa incluidos</strong><span>21 tipos · 12 normales + 20 trampas · duplicado, beneficiario nuevo, cuadre, límite, presupuesto, prompt injection</span></div></div>
+    <div class="req-row"><span class="badge done">✓</span><div class="req-content"><strong>Seguridad: cero pagos indebidos</strong><span>CI falla si aparece un pago indebido · resultado actual: 0 en todo el set</span></div></div>
+    <div class="req-row"><span class="badge done">✓</span><div class="req-content"><strong>Explicabilidad: cualquier persona entiende la decisión</strong><span>Texto plano por regla · motivo y evidencia · legible sin abrir el código</span></div></div>
+  </div>
+
+  <div class="req-group">
+    <div class="req-group-head" style="background:var(--warn-bg);color:var(--warn);">⚠️ Mejorable antes de la demo</div>
+    <div class="req-row"><span class="badge partial">~</span><div class="req-content"><strong>Autonomía</strong><span>Hoy 65.6% · el reto no fija un umbral, pero 75–80% es una meta razonable · ajustar umbrales en R09/R10</span></div></div>
+    <div class="req-row"><span class="badge partial">~</span><div class="req-content"><strong>UI/UX para la demo</strong><span>Funcional y limpia · falta estado vacío atractivo y onboarding de 3 pasos para el jurado</span></div></div>
+  </div>
+
+  <div class="req-group">
+    <div class="req-group-head" style="background:var(--stop-bg);color:var(--stop);">✗ Falta — bloqueante para entregar</div>
+    <div class="req-row"><span class="badge missing">✗</span><div class="req-content"><strong>Video de demostración (2 min 30 s)</strong><span>El guion completo está en <code>docs/DEMO.md</code> · solo falta grabarlo y subirlo</span></div></div>
+    <div class="req-row"><span class="badge missing">✗</span><div class="req-content"><strong>URL pública desplegada</strong><span>Dockerfile y <code>railway.toml</code> listos · hacer deploy en Railway → pegar la URL en el README</span></div></div>
+  </div>
+
+  <div class="req-group">
+    <div class="req-group-head" style="background:var(--plus-bg);color:var(--plus);">➕ Plus — diferenciadores</div>
+    <div class="req-row"><span class="badge plus">+</span><div class="req-content"><strong>Corrida diaria 07:00 con vista en vivo (SSE)</strong><span>Facturas del día en tiempo real: PENDIENTE → evaluando → Pagada/Frenada/Escalada</span></div></div>
+    <div class="req-row"><span class="badge plus">+</span><div class="req-content"><strong>Notificaciones al humano (sidebar, audio, badge, Slack/email)</strong><span>Aviso inmediato de facturas frenadas sin salir de la app</span></div></div>
+    <div class="req-row"><span class="badge plus">+</span><div class="req-content"><strong>Ingesta multi-canal: formulario, JSON, archivo, set de ejemplo</strong><span>Demostrable en vivo sin datos previos</span></div></div>
+    <div class="req-row"><span class="badge plus">+</span><div class="req-content"><strong>Aprendizaje continuo (RAG) + propuestas con aprobación humana</strong><span>El sistema mejora con el uso sin cambiar reglas solo · nunca aprende sin validación humana</span></div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">División de tareas</div>
+  <div class="tasks">
+    <div class="task-card">
+      <h3><span class="persona p1">Persona A</span> Producto & Demo</h3>
+      <ul class="task-list" id="list-a">
+        <li><label><input type="checkbox" onchange="mark(this)"><span>Grabar video 2:30 siguiendo <code>docs/DEMO.md</code> <span class="tag-blocker">bloqueante</span></span></label></li>
+        <li><label><input type="checkbox" onchange="mark(this)"><span>Deploy en Railway y publicar la URL</span></label></li>
+        <li><label><input type="checkbox" onchange="mark(this)"><span>Verificar que la URL cargue y el eval pase en producción</span></label></li>
+        <li><label><input type="checkbox" onchange="mark(this)"><span>Mejorar el estado vacío del Resumen (primera impresión)</span></label></li>
+        <li><label><input type="checkbox" onchange="mark(this)"><span>Añadir onboarding de 3 pasos si el set no está procesado</span></label></li>
+        <li><label><input type="checkbox" onchange="mark(this)"><span>Revisar copy de explicaciones (legible por no-técnicos)</span></label></li>
+      </ul>
+    </div>
+    <div class="task-card">
+      <h3><span class="persona p2">Persona B</span> Motor & Calidad</h3>
+      <ul class="task-list" id="list-b">
+        <li><label><input type="checkbox" onchange="mark(this)"><span>Subir autonomía de 65.6% → 75%+ ajustando umbrales R09/R10</span></label></li>
+        <li><label><input type="checkbox" onchange="mark(this)"><span>Agregar 4–6 facturas nuevas al set para cubrir casos borde</span></label></li>
+        <li><label><input type="checkbox" onchange="mark(this)"><span>Revisar R06 (8 marcas) — ¿falsos positivos?</span></label></li>
+        <li><label><input type="checkbox" onchange="mark(this)"><span>Correr <code>npm run eval</code> tras cada ajuste · mantener 0 pagos indebidos</span></label></li>
+        <li><label><input type="checkbox" onchange="mark(this)"><span>Actualizar README con URL de Railway y métricas finales</span></label></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Cómo correr</div>
+  <pre>npm test          # 171 pruebas
+npm run check     # calidad + cobertura
+npm run eval      # seguridad, precisión y autonomía
+npm start         # http://localhost:3000
+
+docker compose up --build   # alternativa con Docker</pre>
+</div>
+
+<div class="section">
+  <div class="section-label">Ramas activas</div>
+  <div style="background:var(--panel);border:1px solid var(--seam);border-radius:var(--r);overflow:hidden;">
+    <table>
+      <thead><tr><th>Rama</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">main</td><td style="color:var(--ink-2)">base protegida</td></tr>
+        <tr><td class="mono">staging</td><td style="color:var(--ink-2)">v0.13.0 · PR #7 pendiente de merge</td></tr>
+        <tr><td class="mono">dev</td><td style="color:var(--ink-2)">igual a staging tras reconciliación</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="color:var(--ink-3);font-size:12.5px;margin-top:8px;">Nuevas features: <code>fea/&lt;nombre&gt;</code> → PR a <code>dev</code> → staging → main</p>
+</div>
+
+<footer>PayGuard v0.13.0 · 17 oct 2026 · 171 tests green · CI: gates + ladder ✓</footer>
+
+</div>
+<script>
+function mark(cb) {
+  cb.closest('li').classList.toggle('checked', cb.checked);
+  try { localStorage.setItem('pg-tasks', JSON.stringify(getState())); } catch {}
+}
+function getState() {
+  return [...document.querySelectorAll('input[type=checkbox]')].map(c => c.checked);
+}
+try {
+  const s = JSON.parse(localStorage.getItem('pg-tasks') || '[]');
+  document.querySelectorAll('input[type=checkbox]').forEach((c, i) => {
+    if (s[i]) { c.checked = true; c.closest('li').classList.add('checked'); }
+  });
+} catch {}
+</script>
+</body>
+</html>
