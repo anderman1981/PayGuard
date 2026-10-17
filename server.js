@@ -17,6 +17,9 @@ const PUBLIC_DIR = join(ROOT, 'public');
 const ALLOWED_DIRS = [PUBLIC_DIR, join(ROOT, 'src'), join(ROOT, 'data')];
 const PORT = Number(process.env.PORT) || 3000;
 const ADMIN_TOKEN = process.env.PAYGUARD_ADMIN_TOKEN ?? '';
+if (ADMIN_TOKEN === '') {
+  process.stderr.write('[WARN] PAYGUARD_ADMIN_TOKEN no configurado: endpoints de escritura accesibles sin autenticación.\n');
+}
 const MAX_BODY = 1_000_000;
 
 const state = createState(new URL('./data/company.json', import.meta.url));
@@ -50,7 +53,7 @@ const SECURITY_HEADERS = {
   'x-frame-options': 'DENY',
   'referrer-policy': 'no-referrer',
   'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=()',
-  'cross-origin-opener-origin': 'same-origin',
+  'cross-origin-opener-policy': 'same-origin',
 };
 
 /** @param {import('node:http').ServerResponse} res @param {number} status @param {unknown} body */
@@ -125,6 +128,7 @@ const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url ?? '/', `http://${req.headers.host}`);
     if (url.pathname === '/api/events' && (req.method ?? 'GET') === 'GET') {
+      if (!authorized(req)) return json(res, 401, { error: 'no autorizado' });
       res.writeHead(200, {
         ...SECURITY_HEADERS, 'content-type': 'text/event-stream; charset=utf-8',
         'cache-control': 'no-store', connection: 'keep-alive',
@@ -149,7 +153,8 @@ const server = createServer(async (req, res) => {
   } catch (err) {
     const error = /** @type {NodeJS.ErrnoException} */ (err);
     if (error?.code === 'ENOENT') return json(res, 404, { error: 'no encontrado' });
-    json(res, 400, { error: error?.message ?? 'solicitud inválida' });
+    process.stderr.write(`[ERROR] ${req.method} ${req.url}: ${error?.message}\n`);
+    json(res, 400, { error: 'solicitud inválida' });
   }
 });
 

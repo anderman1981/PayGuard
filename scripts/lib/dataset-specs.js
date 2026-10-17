@@ -202,9 +202,87 @@ const CATALOG = [
     concept: 'Monto ilegible en el mensaje',
   },
   {
-    ...CF, id: 'INV-032', source: 'email', case: 'budget-exhausted', expected: 'HOLD', rules: ['R10'], amount: 4900,
+    ...CF, id: 'INV-032', source: 'email', case: 'normal', expected: 'PAY', rules: [], amount: 4900,
     currency: 'USD', number: 'CF-78010', issue: '2026-10-15', due: '2026-11-04',
     bank: bank('0042', { routing: '111000025' }), concept: 'Final October usage',
+  },
+  {
+    ...DP, id: 'INV-033', source: 'pdf', case: 'normal', expected: 'PAY', rules: [], amount: 2100, currency: 'USD',
+    number: 'DP-5201', issue: '2026-10-01', due: '2026-10-31', bank: bank('7730'),
+    concept: 'Analitica de datos - entregable parcial oct',
+  },
+  {
+    ...DP, id: 'INV-034', source: 'pdf', case: 'normal', expected: 'PAY', rules: [], amount: 1800, currency: 'USD',
+    number: 'DP-5202', issue: '2026-10-05', due: '2026-11-04', bank: bank('7730'),
+    concept: 'Analitica de datos - configuracion inicial',
+  },
+  {
+    ...DP, id: 'INV-035', source: 'pdf', case: 'normal', expected: 'PAY', rules: [], amount: 1500, currency: 'USD',
+    number: 'DP-5203', issue: '2026-10-08', due: '2026-11-07', bank: bank('7730'),
+    concept: 'Analitica de datos - reportes ejecutivos',
+  },
+  {
+    ...DR, id: 'INV-036', source: 'pdf', case: 'normal', expected: 'PAY', rules: [], amount: 2400, currency: 'USD',
+    number: 'DR-0500', issue: '2026-10-01', due: '2026-10-31', bank: bank('5566'),
+    concept: 'QA y automatizacion - sprint 1',
+  },
+  {
+    ...DR, id: 'INV-037', source: 'pdf', case: 'normal', expected: 'PAY', rules: [], amount: 1900, currency: 'USD',
+    number: 'DR-0501', issue: '2026-10-06', due: '2026-11-05', bank: bank('5566'),
+    concept: 'QA y automatizacion - sprint 2',
+  },
+  {
+    ...DR, id: 'INV-038', source: 'pdf', case: 'normal', expected: 'PAY', rules: [], amount: 1400, currency: 'USD',
+    number: 'DR-0502', issue: '2026-10-10', due: '2026-11-09', bank: bank('5566'),
+    concept: 'QA y automatizacion - sprint 3',
+  },
+  {
+    ...DR, id: 'INV-039', source: 'pdf', case: 'normal', expected: 'PAY', rules: [], amount: 900, currency: 'USD',
+    number: 'DR-0503', issue: '2026-10-14', due: '2026-11-13', bank: bank('5566'),
+    concept: 'QA y automatizacion - revision final',
+  },
+  {
+    id: 'INV-040', source: 'pdf', case: 'normal', expected: 'PAY', rules: [], vendor: 'Pixel Norte S.A.S.',
+    taxId: '900111222-1', amount: 11000000, currency: 'COP', number: 'PN-1001', contract: 'CT-2026-001',
+    issue: '2026-10-01', due: '2026-10-31', bank: bank('4521'), concept: 'Diseno UI mensual - entregable A', lang: 'es',
+  },
+  {
+    id: 'INV-041', source: 'pdf', case: 'normal', expected: 'PAY', rules: [], vendor: 'Pixel Norte S.A.S.',
+    taxId: '900111222-1', amount: 9500000, currency: 'COP', number: 'PN-1002', contract: 'CT-2026-001',
+    issue: '2026-10-05', due: '2026-11-04', bank: bank('4521'), concept: 'Diseno UI mensual - entregable B', lang: 'es',
+  },
+  {
+    id: 'INV-042', source: 'pdf', case: 'normal', expected: 'PAY', rules: [], vendor: 'Pixel Norte S.A.S.',
+    taxId: '900111222-1', amount: 7500000, currency: 'COP', number: 'PN-1003', contract: 'CT-2026-001',
+    issue: '2026-10-08', due: '2026-11-07', bank: bank('4521'), concept: 'Diseno UI mensual - entregable C', lang: 'es',
+  },
+  {
+    id: 'INV-043', source: 'pdf', case: 'normal', expected: 'PAY', rules: [], vendor: 'Pixel Norte S.A.S.',
+    taxId: '900111222-1', amount: 5000000, currency: 'COP', number: 'PN-1004', contract: 'CT-2026-001',
+    issue: '2026-10-12', due: '2026-11-11', bank: bank('4521'), concept: 'Diseno UI mensual - entregable D', lang: 'es',
+  },
+  {
+    id: 'INV-044', source: 'pdf', case: 'normal', expected: 'PAY', rules: [], vendor: 'Oficinas Quindio S.A.S.',
+    taxId: '901333444-4', amount: 7000000, currency: 'COP', number: 'OQ-2026-11', contract: 'CT-2026-007',
+    issue: '2026-10-01', due: '2026-10-31', bank: bank('3001'), concept: 'Arriendo oficina Medellin - oct piso 3',
+    lang: 'es',
+  },
+  {
+    id: 'INV-045', source: 'pdf', case: 'normal', expected: 'PAY', rules: [], vendor: 'Oficinas Quindio S.A.S.',
+    taxId: '901333444-4', amount: 5500000, currency: 'COP', number: 'OQ-2026-12', contract: 'CT-2026-007',
+    issue: '2026-10-05', due: '2026-11-04', bank: bank('3001'), concept: 'Arriendo oficina Medellin - oct piso 2',
+    lang: 'es',
+  },
+  {
+    id: 'INV-046', source: 'pdf', case: 'normal', expected: 'PAY', rules: [], vendor: 'Oficinas Quindio S.A.S.',
+    taxId: '901333444-4', amount: 4000000, currency: 'COP', number: 'OQ-2026-13', contract: 'CT-2026-007',
+    issue: '2026-10-10', due: '2026-11-09', bank: bank('3001'), concept: 'Arriendo oficina Medellin - sala conf',
+    lang: 'es',
+  },
+  {
+    ...CF, id: 'INV-047', source: 'pdf', case: 'budget-exhausted', expected: 'HOLD', rules: ['R10', 'R09'],
+    amount: 6000, currency: 'USD', number: 'CF-78011', issue: '2026-10-15', due: '2026-11-14',
+    bank: bank('0042'), concept: 'Cloud infrastructure - additional usage',
   },
 ];
 

@@ -15,9 +15,6 @@
 import { evaluateInvoice } from '../rules/engine.js';
 import { blockingResults } from '../rules/policy.js';
 
-/** Reglas que ni una persona puede saltarse al aprobar. */
-const HARD_RULES = new Set(['R03', 'R10', 'R11']);
-
 /**
  * @param {string} invoiceId
  * @param {{ approver: string, reason: string }} by
@@ -33,8 +30,11 @@ export async function approve(invoiceId, { approver, reason }, { state, ctx }) {
 
   const invoice = state.invoices?.get(invoiceId);
   if (invoice) {
+    // Re-evalúa con el contexto actual: el presupuesto, el saldo y las reglas pueden
+    // haber cambiado desde que se escaló. Un HOLD de cualquier regla impide la aprobación
+    // (invariante S3: solo se aprueba lo que el agente escaló, nunca lo que frenó).
     const stillBlocking = blockingResults(evaluateInvoice(invoice, ctx))
-      .filter((r) => HARD_RULES.has(r.ruleId) && r.verdict === 'HOLD')
+      .filter((r) => r.verdict === 'HOLD')
       .map((r) => r.ruleId);
     if (stillBlocking.length > 0) {
       await state.audit.append({

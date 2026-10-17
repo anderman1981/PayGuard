@@ -1172,13 +1172,11 @@
     "id": "INV-032",
     "file": "INV-032.eml",
     "source": "email",
-    "case": "budget-exhausted",
+    "case": "normal",
     "lang": "en",
     "expected": {
-      "outcome": "HOLD",
-      "rules": [
-        "R10"
-      ]
+      "outcome": "PAY",
+      "rules": []
     },
     "extraction": {
       "id": "INV-032",
@@ -1205,6 +1203,549 @@
         "invoiceNumber": 0.95
       },
       "rawText": "From: facturacion@cloudforgellc.example\nTo: pagos@andeslabs.example\nSubject: INVOICE CF-78010\nDate: 2026-10-15\nContent-Type: text/plain; charset=utf-8\n\nINVOICE CF-78010\n\nVendor: CloudForge LLC\nTax ID: US-87-1234567\nDate: 2026-10-15    Due: 2026-11-04\nContract: CT-2026-005\n\nDescription: Final October usage\nAmount due: 4,900 USD\nAccount: ****0042\nROUTING: 111000025"
+    }
+  },
+  {
+    "id": "INV-033",
+    "file": "INV-033.pdf",
+    "source": "pdf",
+    "case": "normal",
+    "lang": "es",
+    "expected": {
+      "outcome": "PAY",
+      "rules": []
+    },
+    "extraction": {
+      "id": "INV-033",
+      "source": "pdf",
+      "invoiceNumber": "DP-5201",
+      "counterpartyName": "DataPampa S.R.L.",
+      "counterpartyTaxId": "30-71234567-8",
+      "amount": 2100,
+      "currency": "USD",
+      "issueDate": "2026-10-01",
+      "dueDate": "2026-10-31",
+      "contractRef": "CT-2026-004",
+      "bank": {
+        "bankName": "Banco",
+        "accountLast4": "7730"
+      },
+      "concept": "Analitica de datos - entregable parcial oct",
+      "confidence": {
+        "counterpartyName": 0.97,
+        "amount": 0.98,
+        "currency": 0.99,
+        "issueDate": 0.96,
+        "invoiceNumber": 0.95
+      },
+      "rawText": "FACTURA DP-5201\n\nProveedor: DataPampa S.R.L.\nNIT/ID: 30-71234567-8\nFecha: 2026-10-01    Vence: 2026-10-31\nContrato: CT-2026-004\n\nConcepto: Analitica de datos - entregable parcial oct\nTotal a pagar: 2,100 USD\nCuenta: ****7730"
+    }
+  },
+  {
+    "id": "INV-034",
+    "file": "INV-034.pdf",
+    "source": "pdf",
+    "case": "normal",
+    "lang": "es",
+    "expected": {
+      "outcome": "PAY",
+      "rules": []
+    },
+    "extraction": {
+      "id": "INV-034",
+      "source": "pdf",
+      "invoiceNumber": "DP-5202",
+      "counterpartyName": "DataPampa S.R.L.",
+      "counterpartyTaxId": "30-71234567-8",
+      "amount": 1800,
+      "currency": "USD",
+      "issueDate": "2026-10-05",
+      "dueDate": "2026-11-04",
+      "contractRef": "CT-2026-004",
+      "bank": {
+        "bankName": "Banco",
+        "accountLast4": "7730"
+      },
+      "concept": "Analitica de datos - configuracion inicial",
+      "confidence": {
+        "counterpartyName": 0.97,
+        "amount": 0.98,
+        "currency": 0.99,
+        "issueDate": 0.96,
+        "invoiceNumber": 0.95
+      },
+      "rawText": "FACTURA DP-5202\n\nProveedor: DataPampa S.R.L.\nNIT/ID: 30-71234567-8\nFecha: 2026-10-05    Vence: 2026-11-04\nContrato: CT-2026-004\n\nConcepto: Analitica de datos - configuracion inicial\nTotal a pagar: 1,800 USD\nCuenta: ****7730"
+    }
+  },
+  {
+    "id": "INV-035",
+    "file": "INV-035.pdf",
+    "source": "pdf",
+    "case": "normal",
+    "lang": "es",
+    "expected": {
+      "outcome": "PAY",
+      "rules": []
+    },
+    "extraction": {
+      "id": "INV-035",
+      "source": "pdf",
+      "invoiceNumber": "DP-5203",
+      "counterpartyName": "DataPampa S.R.L.",
+      "counterpartyTaxId": "30-71234567-8",
+      "amount": 1500,
+      "currency": "USD",
+      "issueDate": "2026-10-08",
+      "dueDate": "2026-11-07",
+      "contractRef": "CT-2026-004",
+      "bank": {
+        "bankName": "Banco",
+        "accountLast4": "7730"
+      },
+      "concept": "Analitica de datos - reportes ejecutivos",
+      "confidence": {
+        "counterpartyName": 0.97,
+        "amount": 0.98,
+        "currency": 0.99,
+        "issueDate": 0.96,
+        "invoiceNumber": 0.95
+      },
+      "rawText": "FACTURA DP-5203\n\nProveedor: DataPampa S.R.L.\nNIT/ID: 30-71234567-8\nFecha: 2026-10-08    Vence: 2026-11-07\nContrato: CT-2026-004\n\nConcepto: Analitica de datos - reportes ejecutivos\nTotal a pagar: 1,500 USD\nCuenta: ****7730"
+    }
+  },
+  {
+    "id": "INV-036",
+    "file": "INV-036.pdf",
+    "source": "pdf",
+    "case": "normal",
+    "lang": "es",
+    "expected": {
+      "outcome": "PAY",
+      "rules": []
+    },
+    "extraction": {
+      "id": "INV-036",
+      "source": "pdf",
+      "invoiceNumber": "DR-0500",
+      "counterpartyName": "Diego Ramirez (contratista)",
+      "counterpartyTaxId": "MX-RAMD900101",
+      "amount": 2400,
+      "currency": "USD",
+      "issueDate": "2026-10-01",
+      "dueDate": "2026-10-31",
+      "contractRef": "CT-2026-006",
+      "bank": {
+        "bankName": "Banco",
+        "accountLast4": "5566"
+      },
+      "concept": "QA y automatizacion - sprint 1",
+      "confidence": {
+        "counterpartyName": 0.97,
+        "amount": 0.98,
+        "currency": 0.99,
+        "issueDate": 0.96,
+        "invoiceNumber": 0.95
+      },
+      "rawText": "FACTURA DR-0500\n\nProveedor: Diego Ramirez (contratista)\nNIT/ID: MX-RAMD900101\nFecha: 2026-10-01    Vence: 2026-10-31\nContrato: CT-2026-006\n\nConcepto: QA y automatizacion - sprint 1\nTotal a pagar: 2,400 USD\nCuenta: ****5566"
+    }
+  },
+  {
+    "id": "INV-037",
+    "file": "INV-037.pdf",
+    "source": "pdf",
+    "case": "normal",
+    "lang": "es",
+    "expected": {
+      "outcome": "PAY",
+      "rules": []
+    },
+    "extraction": {
+      "id": "INV-037",
+      "source": "pdf",
+      "invoiceNumber": "DR-0501",
+      "counterpartyName": "Diego Ramirez (contratista)",
+      "counterpartyTaxId": "MX-RAMD900101",
+      "amount": 1900,
+      "currency": "USD",
+      "issueDate": "2026-10-06",
+      "dueDate": "2026-11-05",
+      "contractRef": "CT-2026-006",
+      "bank": {
+        "bankName": "Banco",
+        "accountLast4": "5566"
+      },
+      "concept": "QA y automatizacion - sprint 2",
+      "confidence": {
+        "counterpartyName": 0.97,
+        "amount": 0.98,
+        "currency": 0.99,
+        "issueDate": 0.96,
+        "invoiceNumber": 0.95
+      },
+      "rawText": "FACTURA DR-0501\n\nProveedor: Diego Ramirez (contratista)\nNIT/ID: MX-RAMD900101\nFecha: 2026-10-06    Vence: 2026-11-05\nContrato: CT-2026-006\n\nConcepto: QA y automatizacion - sprint 2\nTotal a pagar: 1,900 USD\nCuenta: ****5566"
+    }
+  },
+  {
+    "id": "INV-038",
+    "file": "INV-038.pdf",
+    "source": "pdf",
+    "case": "normal",
+    "lang": "es",
+    "expected": {
+      "outcome": "PAY",
+      "rules": []
+    },
+    "extraction": {
+      "id": "INV-038",
+      "source": "pdf",
+      "invoiceNumber": "DR-0502",
+      "counterpartyName": "Diego Ramirez (contratista)",
+      "counterpartyTaxId": "MX-RAMD900101",
+      "amount": 1400,
+      "currency": "USD",
+      "issueDate": "2026-10-10",
+      "dueDate": "2026-11-09",
+      "contractRef": "CT-2026-006",
+      "bank": {
+        "bankName": "Banco",
+        "accountLast4": "5566"
+      },
+      "concept": "QA y automatizacion - sprint 3",
+      "confidence": {
+        "counterpartyName": 0.97,
+        "amount": 0.98,
+        "currency": 0.99,
+        "issueDate": 0.96,
+        "invoiceNumber": 0.95
+      },
+      "rawText": "FACTURA DR-0502\n\nProveedor: Diego Ramirez (contratista)\nNIT/ID: MX-RAMD900101\nFecha: 2026-10-10    Vence: 2026-11-09\nContrato: CT-2026-006\n\nConcepto: QA y automatizacion - sprint 3\nTotal a pagar: 1,400 USD\nCuenta: ****5566"
+    }
+  },
+  {
+    "id": "INV-039",
+    "file": "INV-039.pdf",
+    "source": "pdf",
+    "case": "normal",
+    "lang": "es",
+    "expected": {
+      "outcome": "PAY",
+      "rules": []
+    },
+    "extraction": {
+      "id": "INV-039",
+      "source": "pdf",
+      "invoiceNumber": "DR-0503",
+      "counterpartyName": "Diego Ramirez (contratista)",
+      "counterpartyTaxId": "MX-RAMD900101",
+      "amount": 900,
+      "currency": "USD",
+      "issueDate": "2026-10-14",
+      "dueDate": "2026-11-13",
+      "contractRef": "CT-2026-006",
+      "bank": {
+        "bankName": "Banco",
+        "accountLast4": "5566"
+      },
+      "concept": "QA y automatizacion - revision final",
+      "confidence": {
+        "counterpartyName": 0.97,
+        "amount": 0.98,
+        "currency": 0.99,
+        "issueDate": 0.96,
+        "invoiceNumber": 0.95
+      },
+      "rawText": "FACTURA DR-0503\n\nProveedor: Diego Ramirez (contratista)\nNIT/ID: MX-RAMD900101\nFecha: 2026-10-14    Vence: 2026-11-13\nContrato: CT-2026-006\n\nConcepto: QA y automatizacion - revision final\nTotal a pagar: 900 USD\nCuenta: ****5566"
+    }
+  },
+  {
+    "id": "INV-040",
+    "file": "INV-040.pdf",
+    "source": "pdf",
+    "case": "normal",
+    "lang": "es",
+    "expected": {
+      "outcome": "PAY",
+      "rules": []
+    },
+    "extraction": {
+      "id": "INV-040",
+      "source": "pdf",
+      "invoiceNumber": "PN-1001",
+      "counterpartyName": "Pixel Norte S.A.S.",
+      "counterpartyTaxId": "900111222-1",
+      "amount": 11000000,
+      "currency": "COP",
+      "issueDate": "2026-10-01",
+      "dueDate": "2026-10-31",
+      "contractRef": "CT-2026-001",
+      "bank": {
+        "bankName": "Banco",
+        "accountLast4": "4521"
+      },
+      "concept": "Diseno UI mensual - entregable A",
+      "confidence": {
+        "counterpartyName": 0.97,
+        "amount": 0.98,
+        "currency": 0.99,
+        "issueDate": 0.96,
+        "invoiceNumber": 0.95
+      },
+      "rawText": "FACTURA PN-1001\n\nProveedor: Pixel Norte S.A.S.\nNIT/ID: 900111222-1\nFecha: 2026-10-01    Vence: 2026-10-31\nContrato: CT-2026-001\n\nConcepto: Diseno UI mensual - entregable A\nTotal a pagar: 11,000,000 COP\nCuenta: ****4521"
+    }
+  },
+  {
+    "id": "INV-041",
+    "file": "INV-041.pdf",
+    "source": "pdf",
+    "case": "normal",
+    "lang": "es",
+    "expected": {
+      "outcome": "PAY",
+      "rules": []
+    },
+    "extraction": {
+      "id": "INV-041",
+      "source": "pdf",
+      "invoiceNumber": "PN-1002",
+      "counterpartyName": "Pixel Norte S.A.S.",
+      "counterpartyTaxId": "900111222-1",
+      "amount": 9500000,
+      "currency": "COP",
+      "issueDate": "2026-10-05",
+      "dueDate": "2026-11-04",
+      "contractRef": "CT-2026-001",
+      "bank": {
+        "bankName": "Banco",
+        "accountLast4": "4521"
+      },
+      "concept": "Diseno UI mensual - entregable B",
+      "confidence": {
+        "counterpartyName": 0.97,
+        "amount": 0.98,
+        "currency": 0.99,
+        "issueDate": 0.96,
+        "invoiceNumber": 0.95
+      },
+      "rawText": "FACTURA PN-1002\n\nProveedor: Pixel Norte S.A.S.\nNIT/ID: 900111222-1\nFecha: 2026-10-05    Vence: 2026-11-04\nContrato: CT-2026-001\n\nConcepto: Diseno UI mensual - entregable B\nTotal a pagar: 9,500,000 COP\nCuenta: ****4521"
+    }
+  },
+  {
+    "id": "INV-042",
+    "file": "INV-042.pdf",
+    "source": "pdf",
+    "case": "normal",
+    "lang": "es",
+    "expected": {
+      "outcome": "PAY",
+      "rules": []
+    },
+    "extraction": {
+      "id": "INV-042",
+      "source": "pdf",
+      "invoiceNumber": "PN-1003",
+      "counterpartyName": "Pixel Norte S.A.S.",
+      "counterpartyTaxId": "900111222-1",
+      "amount": 7500000,
+      "currency": "COP",
+      "issueDate": "2026-10-08",
+      "dueDate": "2026-11-07",
+      "contractRef": "CT-2026-001",
+      "bank": {
+        "bankName": "Banco",
+        "accountLast4": "4521"
+      },
+      "concept": "Diseno UI mensual - entregable C",
+      "confidence": {
+        "counterpartyName": 0.97,
+        "amount": 0.98,
+        "currency": 0.99,
+        "issueDate": 0.96,
+        "invoiceNumber": 0.95
+      },
+      "rawText": "FACTURA PN-1003\n\nProveedor: Pixel Norte S.A.S.\nNIT/ID: 900111222-1\nFecha: 2026-10-08    Vence: 2026-11-07\nContrato: CT-2026-001\n\nConcepto: Diseno UI mensual - entregable C\nTotal a pagar: 7,500,000 COP\nCuenta: ****4521"
+    }
+  },
+  {
+    "id": "INV-043",
+    "file": "INV-043.pdf",
+    "source": "pdf",
+    "case": "normal",
+    "lang": "es",
+    "expected": {
+      "outcome": "PAY",
+      "rules": []
+    },
+    "extraction": {
+      "id": "INV-043",
+      "source": "pdf",
+      "invoiceNumber": "PN-1004",
+      "counterpartyName": "Pixel Norte S.A.S.",
+      "counterpartyTaxId": "900111222-1",
+      "amount": 5000000,
+      "currency": "COP",
+      "issueDate": "2026-10-12",
+      "dueDate": "2026-11-11",
+      "contractRef": "CT-2026-001",
+      "bank": {
+        "bankName": "Banco",
+        "accountLast4": "4521"
+      },
+      "concept": "Diseno UI mensual - entregable D",
+      "confidence": {
+        "counterpartyName": 0.97,
+        "amount": 0.98,
+        "currency": 0.99,
+        "issueDate": 0.96,
+        "invoiceNumber": 0.95
+      },
+      "rawText": "FACTURA PN-1004\n\nProveedor: Pixel Norte S.A.S.\nNIT/ID: 900111222-1\nFecha: 2026-10-12    Vence: 2026-11-11\nContrato: CT-2026-001\n\nConcepto: Diseno UI mensual - entregable D\nTotal a pagar: 5,000,000 COP\nCuenta: ****4521"
+    }
+  },
+  {
+    "id": "INV-044",
+    "file": "INV-044.pdf",
+    "source": "pdf",
+    "case": "normal",
+    "lang": "es",
+    "expected": {
+      "outcome": "PAY",
+      "rules": []
+    },
+    "extraction": {
+      "id": "INV-044",
+      "source": "pdf",
+      "invoiceNumber": "OQ-2026-11",
+      "counterpartyName": "Oficinas Quindio S.A.S.",
+      "counterpartyTaxId": "901333444-4",
+      "amount": 7000000,
+      "currency": "COP",
+      "issueDate": "2026-10-01",
+      "dueDate": "2026-10-31",
+      "contractRef": "CT-2026-007",
+      "bank": {
+        "bankName": "Banco",
+        "accountLast4": "3001"
+      },
+      "concept": "Arriendo oficina Medellin - oct piso 3",
+      "confidence": {
+        "counterpartyName": 0.97,
+        "amount": 0.98,
+        "currency": 0.99,
+        "issueDate": 0.96,
+        "invoiceNumber": 0.95
+      },
+      "rawText": "FACTURA OQ-2026-11\n\nProveedor: Oficinas Quindio S.A.S.\nNIT/ID: 901333444-4\nFecha: 2026-10-01    Vence: 2026-10-31\nContrato: CT-2026-007\n\nConcepto: Arriendo oficina Medellin - oct piso 3\nTotal a pagar: 7,000,000 COP\nCuenta: ****3001"
+    }
+  },
+  {
+    "id": "INV-045",
+    "file": "INV-045.pdf",
+    "source": "pdf",
+    "case": "normal",
+    "lang": "es",
+    "expected": {
+      "outcome": "PAY",
+      "rules": []
+    },
+    "extraction": {
+      "id": "INV-045",
+      "source": "pdf",
+      "invoiceNumber": "OQ-2026-12",
+      "counterpartyName": "Oficinas Quindio S.A.S.",
+      "counterpartyTaxId": "901333444-4",
+      "amount": 5500000,
+      "currency": "COP",
+      "issueDate": "2026-10-05",
+      "dueDate": "2026-11-04",
+      "contractRef": "CT-2026-007",
+      "bank": {
+        "bankName": "Banco",
+        "accountLast4": "3001"
+      },
+      "concept": "Arriendo oficina Medellin - oct piso 2",
+      "confidence": {
+        "counterpartyName": 0.97,
+        "amount": 0.98,
+        "currency": 0.99,
+        "issueDate": 0.96,
+        "invoiceNumber": 0.95
+      },
+      "rawText": "FACTURA OQ-2026-12\n\nProveedor: Oficinas Quindio S.A.S.\nNIT/ID: 901333444-4\nFecha: 2026-10-05    Vence: 2026-11-04\nContrato: CT-2026-007\n\nConcepto: Arriendo oficina Medellin - oct piso 2\nTotal a pagar: 5,500,000 COP\nCuenta: ****3001"
+    }
+  },
+  {
+    "id": "INV-046",
+    "file": "INV-046.pdf",
+    "source": "pdf",
+    "case": "normal",
+    "lang": "es",
+    "expected": {
+      "outcome": "PAY",
+      "rules": []
+    },
+    "extraction": {
+      "id": "INV-046",
+      "source": "pdf",
+      "invoiceNumber": "OQ-2026-13",
+      "counterpartyName": "Oficinas Quindio S.A.S.",
+      "counterpartyTaxId": "901333444-4",
+      "amount": 4000000,
+      "currency": "COP",
+      "issueDate": "2026-10-10",
+      "dueDate": "2026-11-09",
+      "contractRef": "CT-2026-007",
+      "bank": {
+        "bankName": "Banco",
+        "accountLast4": "3001"
+      },
+      "concept": "Arriendo oficina Medellin - sala conf",
+      "confidence": {
+        "counterpartyName": 0.97,
+        "amount": 0.98,
+        "currency": 0.99,
+        "issueDate": 0.96,
+        "invoiceNumber": 0.95
+      },
+      "rawText": "FACTURA OQ-2026-13\n\nProveedor: Oficinas Quindio S.A.S.\nNIT/ID: 901333444-4\nFecha: 2026-10-10    Vence: 2026-11-09\nContrato: CT-2026-007\n\nConcepto: Arriendo oficina Medellin - sala conf\nTotal a pagar: 4,000,000 COP\nCuenta: ****3001"
+    }
+  },
+  {
+    "id": "INV-047",
+    "file": "INV-047.pdf",
+    "source": "pdf",
+    "case": "budget-exhausted",
+    "lang": "en",
+    "expected": {
+      "outcome": "HOLD",
+      "rules": [
+        "R10",
+        "R09"
+      ]
+    },
+    "extraction": {
+      "id": "INV-047",
+      "source": "pdf",
+      "invoiceNumber": "CF-78011",
+      "counterpartyName": "CloudForge LLC",
+      "counterpartyTaxId": "US-87-1234567",
+      "amount": 6000,
+      "currency": "USD",
+      "issueDate": "2026-10-15",
+      "dueDate": "2026-11-14",
+      "contractRef": "CT-2026-005",
+      "bank": {
+        "bankName": "Banco",
+        "accountLast4": "0042"
+      },
+      "concept": "Cloud infrastructure - additional usage",
+      "confidence": {
+        "counterpartyName": 0.97,
+        "amount": 0.98,
+        "currency": 0.99,
+        "issueDate": 0.96,
+        "invoiceNumber": 0.95
+      },
+      "rawText": "INVOICE CF-78011\n\nVendor: CloudForge LLC\nTax ID: US-87-1234567\nDate: 2026-10-15    Due: 2026-11-14\nContract: CT-2026-005\n\nDescription: Cloud infrastructure - additional usage\nAmount due: 6,000 USD\nAccount: ****0042"
     }
   }
 ]
