@@ -4,6 +4,13 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-10-17
+### Added
+- M8: regla R13, que aplica las reglas del país que emite la factura; se elige por la contraparte registrada o por la forma del identificador fiscal.
+- M8: validadores de Colombia — dígito de verificación del NIT (algoritmo de la DIAN), formato del CUFE, tarifas de IVA (0%, 5%, 19%) y cuadre de totales con retenciones.
+### Fixed
+- Los NIT de la empresa ficticia tenían dígitos de verificación inventados; ahora son coherentes con el algoritmo, y el caso trampa de NIT inválido lo es de verdad.
+
 ## [0.8.0] - 2026-10-17
 ### Added
 - M6: interfaz con cinco vistas (Resumen, Facturas, Aprobaciones, Reglas, Auditoría), selector de idioma y botón para procesar el lote.

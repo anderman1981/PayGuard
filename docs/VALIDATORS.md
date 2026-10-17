@@ -33,13 +33,13 @@ Se aplica según el país de la contraparte o del emisor. Si un país no tiene v
 
 | País | Validador | Estado |
 |---|---|---|
-| CO Colombia | NIT con dígito de verificación, IVA 19/5/0, retenciones, CUFE | M8 |
+| CO Colombia | NIT con dígito de verificación, IVA 19/5/0, retenciones, CUFE | ✅ |
 | MX México | RFC (formato y homoclave) | opcional |
 | BR Brasil | CNPJ con dígitos de verificación | opcional |
 | UE | Número de IVA intracomunitario (formato por país) | opcional |
 | US | EIN (formato) | opcional |
 
-### Colombia (M8 · regla R12)
+### Colombia (M8 · regla R13, en `src/rules/r13-regional.js` y `src/validators/colombia.js`)
 
 
 

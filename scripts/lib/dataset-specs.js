@@ -50,7 +50,7 @@ const CATALOG = [
   },
   {
     id: 'INV-003', source: 'pdf', case: 'normal', expected: 'PAY', rules: [], vendor: 'Oficinas Quindio S.A.S.',
-    taxId: '901333444-5', amount: 8500000, currency: 'COP', number: 'OQ-2026-10', contract: 'CT-2026-007',
+    taxId: '901333444-4', amount: 8500000, currency: 'COP', number: 'OQ-2026-10', contract: 'CT-2026-007',
     issue: '2026-10-01', due: '2026-10-15', bank: bank('3001'), concept: 'Arriendo oficina Medellin', lang: 'es',
   },
   {
@@ -113,13 +113,13 @@ const CATALOG = [
   },
   {
     id: 'INV-015', source: 'pdf', case: 'unknown-beneficiary', expected: 'ESCALATE', rules: ['R04', 'R06'],
-    vendor: 'Empresa Fantasma Ltda.', taxId: '800999111-2', amount: 2400, currency: 'USD', number: 'EF-0001',
+    vendor: 'Empresa Fantasma Ltda.', taxId: '800999111-9', amount: 2400, currency: 'USD', number: 'EF-0001',
     contract: null, issue: '2026-10-05', due: '2026-10-25', bank: bank('1111'), concept: 'Servicios profesionales',
     lang: 'es',
   },
   {
     id: 'INV-016', source: 'chat', case: 'beneficiary-not-allowed', expected: 'ESCALATE', rules: ['R04', 'R06'],
-    vendor: 'Talento Remoto S.A.S.', taxId: '902555666-7', amount: 3200, currency: 'USD', number: 'TR-0450',
+    vendor: 'Talento Remoto S.A.S.', taxId: '902555666-9', amount: 3200, currency: 'USD', number: 'TR-0450',
     contract: null, issue: '2026-10-06', due: '2026-10-26', bank: bank('9090'), concept: 'Reclutamiento tecnico',
     lang: 'es',
   },

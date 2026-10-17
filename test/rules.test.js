@@ -67,7 +67,7 @@ test('R04 escala beneficiario desconocido y no permitido', () => {
   const desconocido = invoiceWith({ counterpartyName: 'Empresa Fantasma Ltda.', counterpartyTaxId: '999' });
   assert.equal(verdictOf('R04', desconocido).verdict, 'ESCALATE');
   const noPermitido = invoiceWith({
-    counterpartyName: 'Talento Remoto S.A.S.', counterpartyTaxId: '902555666-7', bank: { accountLast4: '9090' },
+    counterpartyName: 'Talento Remoto S.A.S.', counterpartyTaxId: '902555666-9', bank: { accountLast4: '9090' },
   });
   const r = verdictOf('R04', noPermitido);
   assert.equal(r.verdict, 'ESCALATE');
@@ -82,7 +82,7 @@ test('R05 escala si cambió la cuenta bancaria', () => {
 
 test('R06 escala sin contrato y frena si no cuadra', () => {
   const sinContrato = invoiceWith({
-    counterpartyName: 'Talento Remoto S.A.S.', counterpartyTaxId: '902555666-7', contractRef: null,
+    counterpartyName: 'Talento Remoto S.A.S.', counterpartyTaxId: '902555666-9', contractRef: null,
   });
   assert.equal(verdictOf('R06', sinContrato).verdict, 'ESCALATE');
   assert.equal(verdictOf('R06', invoiceWith({ amount: 9999 })).verdict, 'HOLD');

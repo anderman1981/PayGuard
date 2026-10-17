@@ -16,13 +16,14 @@ import { r09 } from './r09-limites.js';
 import { r10 } from './r10-presupuesto.js';
 import { r11 } from './r11-saldo.js';
 import { r12 } from './r12-datos-pago.js';
+import { r13 } from './r13-regional.js';
 
 /** @typedef {import('./helpers.js').Rule} Rule */
 /** @typedef {import('./helpers.js').RuleContext} RuleContext */
 /** @typedef {import('../domain/types.js').RuleResult} RuleResult */
 
-/** Catálogo en orden de ejecución. M8 añade aquí sus reglas regionales. @type {Rule[]} */
-export const RULES = [r01, r02, r03, r04, r05, r06, r07, r08, r09, r10, r11, r12];
+/** Catálogo en orden de ejecución. @type {Rule[]} */
+export const RULES = [r01, r02, r03, r04, r05, r06, r07, r08, r09, r10, r11, r12, r13];
 
 /**
  * Evalúa una factura contra todas las reglas.
