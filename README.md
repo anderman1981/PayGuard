@@ -33,7 +33,7 @@ PayGuard revisa las facturas de una empresa y decide por ella cuáles **pagar**,
 | M3 | Motor de reglas R01–R12 + política + pruebas de propiedades | ✅ |
 | M4 | Registro de auditoría encadenado + explicaciones + métricas | ✅ |
 | M5 | Cola de aprobación humana + API completa | ✅ |
-| M6 | Interfaz: reglas, tablero, detalle, aprobaciones | ⏳ |
+| M6 | Interfaz: resumen, facturas, aprobaciones, reglas y auditoría | ✅ |
 | M7 | Métricas de autonomía/seguridad + demo | ⏳ |
 | M8 | Validadores regionales (Colombia y otros) | ⏳ |
 | M9 | Multi-idioma y validadores internacionales (IBAN, BIC, ABA, divisas) | ✅ |
