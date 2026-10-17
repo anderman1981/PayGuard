@@ -25,6 +25,10 @@ export function createState(companyUrl, now = new Date()) {
     invoices: new Map(),
     /** @type {import('../learning/advisor.js').Proposal[]} */
     proposals: [],
+    notifyConfig: {
+      slackWebhook: process.env.PAYGUARD_SLACK_WEBHOOK ?? '',
+      email: process.env.PAYGUARD_NOTIFY_EMAIL ?? '',
+    },
     now,
   };
 }

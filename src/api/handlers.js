@@ -151,8 +151,8 @@ export async function postNotify(state, input, deps = {}) {
     return { status: 200, body: { slack: 'desactivado', email: 'desactivado' } };
   }
   const result = { slack: 'sin configurar', email: 'sin configurar' };
-  const effectiveSlack = slackWebhook || env.PAYGUARD_SLACK_WEBHOOK;
-  const effectiveEmail = email || env.PAYGUARD_NOTIFY_EMAIL;
+  const effectiveSlack = slackWebhook || state.notifyConfig.slackWebhook || env.PAYGUARD_SLACK_WEBHOOK;
+  const effectiveEmail = email || state.notifyConfig.email || env.PAYGUARD_NOTIFY_EMAIL;
   if (effectiveSlack) {
     result.slack = isSlackWebhook(effectiveSlack)
       ? await postJson(fetchImpl, effectiveSlack, { text })
@@ -166,6 +166,40 @@ export async function postNotify(state, input, deps = {}) {
   }
   await state.audit.append({ type: 'notify', actor: 'agent', payload: { channels: result }, at: state.now });
   return { status: 200, body: result };
+}
+
+/** Devuelve la configuración actual de notificaciones (webhook y email guardados en el servidor).
+ * @param {AppState} state @returns {ApiResponse} */
+export const getNotifyConfig = (state) => ({
+  status: 200,
+  body: {
+    slackWebhook: state.notifyConfig.slackWebhook,
+    email: state.notifyConfig.email,
+    notifyEnabled: process.env.PAYGUARD_ALLOW_NOTIFY === '1',
+  },
+});
+
+/**
+ * Actualiza la configuración de notificaciones. Valida que el webhook sea de hooks.slack.com.
+ * @param {AppState} state
+ * @param {{ slackWebhook?: string, email?: string }} input
+ * @returns {Promise<ApiResponse>}
+ */
+export async function putNotifyConfig(state, input) {
+  const { slackWebhook: wh, email: em } = input;
+  if (wh !== undefined) {
+    if (wh && !isSlackWebhook(wh)) {
+      return { status: 400, body: { errors: ['slackWebhook debe ser de hooks.slack.com'] } };
+    }
+    state.notifyConfig.slackWebhook = wh;
+  }
+  if (em !== undefined) state.notifyConfig.email = em;
+  await state.audit.append({
+    type: 'notify-config', actor: 'admin',
+    payload: { slackSet: !!state.notifyConfig.slackWebhook, emailSet: !!state.notifyConfig.email },
+    at: state.now,
+  });
+  return { status: 200, body: { ok: true } };
 }
 
 /** Fecha de referencia de "hoy": la del reloj del estado, salvo que se pida otra. */
