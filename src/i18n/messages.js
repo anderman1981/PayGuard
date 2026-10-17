@@ -35,6 +35,18 @@ const UI = {
     pt: 'Precisa da aprovação de uma pessoa porque:', fr: 'Nécessite l’approbation d’une personne parce que :',
     de: 'Benötigt die Genehmigung einer Person, weil:', it: 'Richiede l’approvazione di una persona perché:',
   },
+  'a01.name': {
+    es: 'Memoria de casos', en: 'Case memory', pt: 'Memória de casos',
+    fr: 'Mémoire de cas', de: 'Fallgedächtnis', it: 'Memoria dei casi',
+  },
+  'a01.similarRejected': {
+    es: 'El {rate}% de los casos parecidos fue rechazado por una persona',
+    en: '{rate}% of similar cases were rejected by a person',
+    pt: '{rate}% dos casos semelhantes foram rejeitados por uma pessoa',
+    fr: '{rate} % des cas similaires ont été rejetés par une personne',
+    de: '{rate} % der ähnlichen Fälle wurden von einer Person abgelehnt',
+    it: 'Il {rate}% dei casi simili è stato rifiutato da una persona',
+  },
   'explain.because.PAY': {
     es: 'Se aprobó automáticamente: las {count} reglas se cumplen.', en: 'Approved automatically: all {count} rules pass.',
     pt: 'Aprovada automaticamente: as {count} regras cumprem-se.', fr: 'Approuvée automatiquement : les {count} règles sont respectées.',
