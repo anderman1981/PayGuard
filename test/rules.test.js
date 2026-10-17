@@ -172,3 +172,22 @@ test('utilidades: conversión, fechas y gasto del periodo', () => {
   assert.ok(periodSpendUsd(ctx) > 0);
   assert.equal(contractOf(invoiceWith({ contractRef: 'CT-2026-004' }), ctx).id, 'CT-2026-004');
 });
+
+test('R01 escala cuando el campo está en cadena vacía', () => {
+  const r = verdictOf('R01', invoiceWith({ invoiceNumber: '' }));
+  assert.equal(r.verdict, 'ESCALATE');
+  assert.match(r.reason, /invoiceNumber/);
+});
+
+test('R02 pasa cuando la factura no tiene rawText', () => {
+  const sinTexto = invoiceWith({});
+  delete sinTexto.rawText;
+  assert.equal(verdictOf('R02', sinTexto).verdict, 'PASS');
+});
+
+test('el motor usa es como idioma por defecto cuando lang no está definido', () => {
+  const ctxSinLang = makeCtx({}, { lang: undefined });
+  const r = verdictOf('R09', invoiceWith({ amount: 6000 }), ctxSinLang);
+  assert.equal(r.verdict, 'ESCALATE');
+  assert.match(r.reason, /umbral de aprobación/);
+});
