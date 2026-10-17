@@ -119,12 +119,27 @@ export function detectLang(text)        // => Lang | null  (heurístico, sin mod
 ```
 Toda respuesta de la API acepta `?lang=` y respeta `Accept-Language`. Ningún texto visible se escribe dentro de la lógica: siempre pasa por `t()`.
 
+### Módulos implementados de M3
+
+`src/rules/helpers.js` (conversión a USD, fechas, contraparte, contrato, gasto del periodo),
+`src/rules/engine.js` (`evaluateInvoice`, catálogo `RULES`),
+`src/rules/policy.js` (`decide`, `blockingResults`) y una regla por archivo:
+`r01-datos-completos.js`, `r02-sin-instrucciones.js`, `r03-sin-duplicado.js`, `r04-beneficiario.js`,
+`r05-datos-bancarios.js`, `r06-contrato.js`, `r07-moneda-pais.js`, `r08-fechas.js`,
+`r09-limites.js`, `r10-presupuesto.js`, `r11-saldo.js`, `r12-datos-pago.js`.
+
+Los textos de cada motivo viven en `src/i18n/messages/rules-a.js` (R01–R06) y
+`src/i18n/messages/rules-b.js` (R07–R12); las etiquetas de interfaz en `src/i18n/messages.js`.
+Una regla que lance una excepción se registra como ESCALATE: nunca deja pasar un pago.
+
 ## 4. Estructura de carpetas
 
 ```
-src/domain       tipos y etiquetas
-src/config       reglas por defecto y validación
-src/integrations fuente de cuenta (mock / Blinka solo lectura) y guardia
+src/domain       tipos y etiquetas (types.js)
+src/config       reglas por defecto y su validación (default-rules.js)
+src/integrations account-source.js (fuente de cuenta: saldos, contrapartes, contratos,
+                 historial; hoy MockAccountSource, mañana Blinka de solo lectura)
+                 y readonly-guard.js (bloquea todo movimiento de dinero)
 src/extraction   M2
 src/rules        M3
 src/audit        M4

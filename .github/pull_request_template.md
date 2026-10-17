@@ -11,4 +11,5 @@
 - [ ] `npm run check` en verde · `npm run typecheck` en verde
 - [ ] `npm run version:bump` ejecutado y `CHANGELOG.md` actualizado
 - [ ] Sin dependencias de runtime nuevas · sin datos reales · sin claves
-- [ ] Documentación afectada actualizada
+- [ ] Documentación actualizada según `docs/DOC-RULE.md`
+- [ ] Línea agregada en `docs/BITACORA.md`

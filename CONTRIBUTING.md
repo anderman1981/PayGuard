@@ -86,6 +86,10 @@ Ejemplo: `fea(rules): agregar R10 presupuesto del periodo`.
 - Cada endpoint de la API tiene prueba de respuesta correcta, de entrada inválida y de cabeceras de seguridad.
 - Las pruebas no llaman a ningún servicio externo (modo caché o `fetch` simulado).
 
-## 7. Definición de terminado
+## 7. Documentación viva
 
-Un PR está terminado cuando: cumple el contrato de ARCHITECTURE.md, tiene pruebas, todos los gates están en verde, la documentación afectada está actualizada, `CHANGELOG.md` tiene su entrada y no introduce dependencias de runtime.
+Ninguna interacción termina sin documentación al día: qué actualizar, la bitácora y cómo se verifica están en [docs/DOC-RULE.md](docs/DOC-RULE.md). Aplica igual a personas y a agentes.
+
+## 8. Definición de terminado
+
+Un PR está terminado cuando: cumple el contrato de ARCHITECTURE.md, tiene pruebas, todos los gates están en verde, la documentación afectada está actualizada según `docs/DOC-RULE.md`, `CHANGELOG.md` y `docs/BITACORA.md` tienen su entrada, y no introduce dependencias de runtime.
