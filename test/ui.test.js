@@ -1,7 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { money, counts, filterRows, parseRulesForm, metricTiles, TONE } from '../public/lib.js';
+import {
+  money, counts, filterRows, parseRulesForm, metricTiles, TONE,
+  buildManualInvoice, parseInvoicesJson, deriveAgentMessages,
+} from '../public/lib.js';
 
 const PUBLIC = new URL('../public/', import.meta.url);
 const read = (/** @type {string} */ f) => readFileSync(new URL(f, PUBLIC), 'utf8');
@@ -88,4 +91,47 @@ test('la hoja de estilos define modo claro y oscuro y es usable en móvil', () =
   assert.match(css, /prefers-color-scheme: dark/);
   assert.match(css, /@media \(max-width: 820px\)/);
   assert.match(css, /focus-visible/);
+});
+
+test('buildManualInvoice arma una factura válida con confianza plena', () => {
+  const inv = buildManualInvoice({
+    id: 'FAC-9', counterpartyName: 'Proveedor S.A.', counterpartyTaxId: 'US-12-3456789',
+    amount: '1.250,50', currency: 'usd', issueDate: '2026-10-01', dueDate: '2026-10-31',
+    invoiceNumber: 'INV-9', contractRef: 'CT-9', accountLast4: '0042', concept: 'Servicios',
+  });
+  assert.equal(inv.id, 'FAC-9');
+  assert.equal(inv.source, 'chat');
+  assert.equal(inv.currency, 'USD');
+  assert.equal(inv.amount, 1250.5);
+  assert.deepEqual(inv.bank, { accountLast4: '0042' });
+  assert.equal(inv.confidence.amount, 1);
+  assert.equal(typeof inv.rawText, 'string');
+});
+
+test('buildManualInvoice deja null los campos vacíos y genera un id si falta', () => {
+  const inv = buildManualInvoice({ counterpartyName: '', amount: '' });
+  assert.ok(String(inv.id).startsWith('manual-'));
+  assert.equal(inv.counterpartyName, null);
+  assert.equal(inv.amount, null);
+  assert.equal(inv.bank, null);
+});
+
+test('parseInvoicesJson acepta objeto, lista y {invoices}, y reporta errores', () => {
+  assert.equal(parseInvoicesJson('').error !== null, true);
+  assert.equal(parseInvoicesJson('{').error, 'El JSON no es válido.');
+  assert.deepEqual(parseInvoicesJson('{"id":"A"}').invoices.length, 1);
+  assert.deepEqual(parseInvoicesJson('[{"id":"A"},{"id":"B"}]').invoices.length, 2);
+  assert.deepEqual(parseInvoicesJson('{"invoices":[{"id":"A"}]}').invoices.length, 1);
+  assert.equal(parseInvoicesJson('[1,2]').error, 'Cada factura debe ser un objeto.');
+});
+
+test('deriveAgentMessages avisa solo de frenadas y escaladas, con el porqué', () => {
+  const msgs = deriveAgentMessages(rows);
+  assert.equal(msgs.length, 2);
+  const hold = msgs.find((m) => m.id === 'INV-013');
+  const esc = msgs.find((m) => m.id === 'INV-023');
+  assert.equal(hold.outcome, 'HOLD');
+  assert.ok(hold.text.startsWith('No voy a pagar INV-013:'));
+  assert.ok(hold.text.includes('R03'));
+  assert.ok(esc.text.startsWith('Necesito tu aprobación para INV-023:'));
 });

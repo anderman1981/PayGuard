@@ -117,6 +117,50 @@ export const getAuditVerify = async (state) => ({ status: 200, body: await state
 /** @param {AppState} state @returns {ApiResponse} */
 export const getProposals = (state) => ({ status: 200, body: state.proposals });
 
+/** @param {string} url */
+const isSlackWebhook = (url) => {
+  try { const u = new URL(url); return u.protocol === 'https:' && u.hostname === 'hooks.slack.com'; } catch { return false; }
+};
+
+/** @param {typeof fetch} fetchImpl @param {string} url @param {unknown} payload */
+async function postJson(fetchImpl, url, payload) {
+  try {
+    const res = await fetchImpl(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+    return res.ok ? 'enviado' : `error ${res.status}`;
+  } catch { return 'error de red'; }
+}
+
+/**
+ * Reenvía un aviso al responsable humano por canales externos. Nunca mueve
+ * dinero: solo notifica qué frenó o escaló el agente. Apagado salvo que
+ * PAYGUARD_ALLOW_NOTIFY=1, y solo acepta webhooks de hooks.slack.com para no
+ * usarse como proxy hacia cualquier URL. El correo necesita un relay propio
+ * (PAYGUARD_EMAIL_WEBHOOK). Cada reenvío queda en la auditoría.
+ * @param {AppState} state
+ * @param {{ text?: string, slackWebhook?: string, email?: string }} input
+ * @param {{ fetchImpl?: typeof fetch, env?: Record<string, string|undefined> }} [deps]
+ * @returns {Promise<ApiResponse>}
+ */
+export async function postNotify(state, input, deps = {}) {
+  const env = deps.env ?? process.env;
+  const fetchImpl = deps.fetchImpl ?? globalThis.fetch;
+  const { text, slackWebhook, email } = input;
+  if (!text) return { status: 400, body: { errors: ['text es obligatorio'] } };
+  if (env.PAYGUARD_ALLOW_NOTIFY !== '1') {
+    return { status: 200, body: { slack: 'desactivado', email: 'desactivado' } };
+  }
+  const result = { slack: 'sin configurar', email: 'sin configurar' };
+  if (slackWebhook) {
+    result.slack = isSlackWebhook(slackWebhook) ? await postJson(fetchImpl, slackWebhook, { text }) : 'url no permitida';
+  }
+  if (email) {
+    const hook = env.PAYGUARD_EMAIL_WEBHOOK;
+    result.email = hook ? await postJson(fetchImpl, hook, { to: email, text }) : 'requiere proveedor (PAYGUARD_EMAIL_WEBHOOK)';
+  }
+  await state.audit.append({ type: 'notify', actor: 'agent', payload: { channels: result }, at: state.now });
+  return { status: 200, body: result };
+}
+
 /**
  * @param {AppState} state
  * @param {{ id: string, outcome: import('../domain/types.js').Outcome }[]} expected

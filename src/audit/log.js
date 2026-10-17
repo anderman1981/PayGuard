@@ -6,7 +6,7 @@
  *
  * Usa crypto.subtle, disponible tanto en Node como en el navegador.
  *
- * @typedef {'decision'|'approval'|'rejection'|'rules-change'|'proposal'} EntryType
+ * @typedef {'decision'|'approval'|'rejection'|'rules-change'|'proposal'|'notify'} EntryType
  *
  * @typedef {Object} AuditEntry
  * @property {number} index
