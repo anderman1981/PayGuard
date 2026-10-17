@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { createState, ruleContext } from './src/api/state.js';
 import { resolveLang } from './src/i18n/index.js';
 import * as api from './src/api/handlers.js';
+import { loadDataset, nextDailyRunMs } from './src/daily/daily-run.js';
 
 const ROOT = fileURLToPath(new URL('.', import.meta.url));
 const PUBLIC_DIR = join(ROOT, 'public');
@@ -19,6 +20,22 @@ const ADMIN_TOKEN = process.env.PAYGUARD_ADMIN_TOKEN ?? '';
 const MAX_BODY = 1_000_000;
 
 const state = createState(new URL('./data/company.json', import.meta.url));
+const DATASET = loadDataset(new URL('./data/invoices/manifest.json', import.meta.url));
+
+/** Clientes conectados al flujo de eventos en vivo (SSE) de la corrida diaria. */
+/** @type {Set<import('node:http').ServerResponse>} */
+const sseClients = new Set();
+/** Pausa entre facturas para que la corrida se vea avanzar; 0 la apaga (pruebas). */
+const STEP_MS = Number(process.env.PAYGUARD_DAILY_STEP_MS ?? 500);
+const dailyDelay = STEP_MS > 0 ? () => new Promise((r) => setTimeout(r, STEP_MS)) : undefined;
+
+/** Reparte un evento a cada cliente SSE; descarta los que ya cerraron. @param {Record<string, unknown>} event */
+function broadcastEvent(event) {
+  const frame = `event: ${String(event.type)}\ndata: ${JSON.stringify(event)}\n\n`;
+  for (const res of sseClients) {
+    try { res.write(frame); } catch { sseClients.delete(res); }
+  }
+}
 
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
@@ -94,6 +111,12 @@ async function route(req, url) {
   if (p === '/api/metrics') return api.getMetrics(state, []);
   if (p === '/api/upload' && method === 'POST') return api.postUpload(state, await readBody(req), lang, ctx);
   if (p === '/api/notify' && method === 'POST') return api.postNotify(state, await readBody(req));
+  if (p === '/api/daily-run' && method === 'GET') {
+    return api.getDailyRun(state, { dataset: DATASET, date: url.searchParams.get('date') });
+  }
+  if (p === '/api/daily-run' && method === 'POST') {
+    return api.postDailyRun(state, await readBody(req), lang, ctx, { dataset: DATASET, onEvent: broadcastEvent, delay: dailyDelay });
+  }
   if (p.startsWith('/api/')) return { status: 404, body: { error: 'no encontrado' } };
   return null;
 }
@@ -101,6 +124,16 @@ async function route(req, url) {
 const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url ?? '/', `http://${req.headers.host}`);
+    if (url.pathname === '/api/events' && (req.method ?? 'GET') === 'GET') {
+      res.writeHead(200, {
+        ...SECURITY_HEADERS, 'content-type': 'text/event-stream; charset=utf-8',
+        'cache-control': 'no-store', connection: 'keep-alive',
+      });
+      res.write(': conectado\n\n');
+      sseClients.add(res);
+      req.on('close', () => sseClients.delete(res));
+      return;
+    }
     const apiResult = await route(req, url);
     if (apiResult) return json(res, apiResult.status, apiResult.body);
 
@@ -120,4 +153,31 @@ const server = createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, () => process.stdout.write(`PayGuard escuchando en http://localhost:${PORT}\n`));
+/**
+ * Disparador de la corrida diaria a las 07:00. Es un reloj propio con
+ * setTimeout nativo (0 dependencias): calcula el próximo 07:00 en la zona
+ * configurada, corre la misma lógica que /api/daily-run y se reprograma. En
+ * producción esto lo haría un cron real del sistema o del orquestador. Se
+ * activa solo con PAYGUARD_DAILY=1, así nunca corre en pruebas ni por defecto.
+ */
+function scheduleDailyRun() {
+  const timeZone = process.env.PAYGUARD_TZ || process.env.TZ || 'UTC';
+  const timer = setTimeout(() => {
+    const ctx = ruleContext(state, 'es');
+    broadcastEvent({ type: 'run-start', date: state.now.toISOString().slice(0, 10), trigger: '07:00' });
+    api.postDailyRun(state, {}, 'es', ctx, { dataset: DATASET, onEvent: broadcastEvent, delay: dailyDelay })
+      .then((r) => broadcastEvent({ type: 'run-done', count: /** @type {any} */ (r.body).count }))
+      .catch(() => broadcastEvent({ type: 'run-done', count: 0 }))
+      .finally(() => scheduleDailyRun());
+  }, nextDailyRunMs(7, timeZone, new Date()));
+  timer.unref?.();
+}
+
+server.listen(PORT, () => {
+  process.stdout.write(`PayGuard escuchando en http://localhost:${PORT}\n`);
+  if (process.env.PAYGUARD_DAILY === '1') {
+    const tz = process.env.PAYGUARD_TZ || process.env.TZ || 'UTC';
+    process.stdout.write(`Corrida diaria programada para las 07:00 (${tz}); en producción iría un cron real\n`);
+    scheduleDailyRun();
+  }
+});

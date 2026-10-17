@@ -6,14 +6,15 @@
  */
 import { money, counts, filterRows, parseRulesForm, metricTiles, TONE } from './lib.js';
 import { viewIngesta } from './ingesta.js';
+import { viewCorrida } from './corrida.js';
 import { createNotifier } from './notify.js';
 
 /** @type {ReturnType<typeof createNotifier>|null} */
 let notifier = null;
 
 const VIEWS = [
-  ['resumen', 'Resumen'], ['ingesta', 'Ingesta'], ['facturas', 'Facturas'], ['aprobaciones', 'Aprobaciones'],
-  ['reglas', 'Reglas'], ['auditoria', 'Auditoría'],
+  ['resumen', 'Resumen'], ['corrida', 'Hoy'], ['ingesta', 'Ingesta'], ['facturas', 'Facturas'],
+  ['aprobaciones', 'Aprobaciones'], ['reglas', 'Reglas'], ['auditoria', 'Auditoría'],
 ];
 
 const state = {
@@ -303,6 +304,7 @@ function render() {
   if (state.notice) view.append(el('div', { class: `notice ${state.notice.tone}`, text: state.notice.text }));
   const builders = {
     resumen: viewResumen,
+    corrida: () => viewCorrida({ el, api, state, setNotice, notify: (d) => notifier && notifier.sync(d) }),
     ingesta: () => viewIngesta({ el, api, state, setNotice, refresh }),
     facturas: viewFacturas, aprobaciones: viewAprobaciones,
     reglas: viewReglas, auditoria: viewAuditoria,

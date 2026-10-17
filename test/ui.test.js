@@ -74,9 +74,20 @@ test('la interfaz no usa innerHTML con datos ni scripts en línea', () => {
   assert.match(html, /<script type="module" src="\/app\.js">/);
 });
 
-test('la interfaz cubre las cinco vistas y respeta la accesibilidad básica', () => {
+test('la vista "Hoy" (corrida diaria) está cableada y no inserta marcado con datos', () => {
   const app = read('app.js');
-  for (const v of ['resumen', 'facturas', 'aprobaciones', 'reglas', 'auditoria']) {
+  assert.ok(app.includes("'corrida'"), 'falta la vista corrida');
+  assert.ok(app.includes('viewCorrida'), 'la vista corrida no está cableada');
+  const corrida = read('corrida.js');
+  assert.ok(!/\.innerHTML\s*=/.test(corrida), 'la corrida no inserta marcado con datos');
+  assert.ok(!corrida.includes('insertAdjacentHTML'));
+  assert.match(corrida, /EventSource/, 'usa eventos en vivo (SSE)');
+  assert.match(corrida, /\/daily-run/, 'llama al endpoint de la corrida diaria');
+});
+
+test('la interfaz cubre las vistas base y respeta la accesibilidad básica', () => {
+  const app = read('app.js');
+  for (const v of ['resumen', 'corrida', 'facturas', 'aprobaciones', 'reglas', 'auditoria']) {
     assert.ok(app.includes(`'${v}'`), `falta la vista ${v}`);
   }
   assert.match(app, /aria-current/);
