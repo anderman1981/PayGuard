@@ -29,7 +29,7 @@ PayGuard revisa las facturas de una empresa y decide por ella cuáles **pagar**,
 |---|---|---|
 | M0 | Dominio, reglas, guardia de solo lectura, servidor, Docker, gobierno y gates | ✅ |
 | M1 | 32 facturas ficticias (PDF, PNG, correo, chat) con decisión esperada | ✅ |
-| M2 | Ingesta y extracción (LLM con respaldo + caché offline) | ⏳ |
+| M2 | Extracción con cadena de LLMs, validación estricta y caché sin conexión | ✅ |
 | M3 | Motor de reglas R01–R12 + política + pruebas de propiedades | ✅ |
 | M4 | Registro de auditoría encadenado + explicaciones + métricas | ✅ |
 | M5 | Cola de aprobación humana + API completa | ✅ |

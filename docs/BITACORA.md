@@ -10,3 +10,4 @@ Una línea por sesión de trabajo. Ver [DOC-RULE.md](DOC-RULE.md).
 | 2026-10-17 | claude | fea/m10-learning | 0.4.0 | M10: memoria de casos (RAG sin dependencias), consejero que solo puede escalar y propuestas de ajuste con aprobación humana; se define la cadena de modelos |
 | 2026-10-17 | claude | fea/m4-audit-log | 0.5.0 | M4 y M5: auditoría encadenada, explicaciones multi-idioma, agente, métricas, cola de aprobación y API completa |
 | 2026-10-17 | claude | fea/m1-dataset | 0.6.0 | M1: 32 facturas simuladas en 4 formatos reales (PDF y PNG escritos sin dependencias), manifiesto con decisión esperada y extracción dorada; el agente acierta el 100% del set |
+| 2026-10-17 | claude | fea/m2-extraction | 0.7.0 | M2: validador estricto de la salida del modelo, instrucción a prueba de manipulación, cadena de cuatro proveedores con interruptor y modo caché |
