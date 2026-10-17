@@ -19,7 +19,7 @@
 | RF-05 | Pantalla donde la empresa define reglas y ve pagado / frenado / pendiente y por qué | M6 Interfaz |
 | RF-06 | Set propio de facturas con casos normales y trampa | M1 Datos |
 | RF-07 | Medir autonomía, seguridad y explicabilidad | M7 Evaluación |
-| RF-08 | Subir una factura colombiana real y validar sus datos de pago (solo local) | M8 Colombia |
+| RF-08 | Subir una factura real de cualquier país y validar sus datos de pago (solo local) | M8 + M9 |
 | RNF-01 | Cero pagos fuera de las reglas sin aprobación humana | Invariante de M3 + M5, test de propiedades |
 | RNF-02 | Cada decisión explicable después, sin abrir el código | M4 |
 | RNF-03 | Ningún dato real en el repo ni en la demo pública | SECURITY.md, gate de calidad |
@@ -44,7 +44,8 @@ Detalle completo en [REQUIREMENTS.md](REQUIREMENTS.md).
 | M5 | Cola de aprobación humana | `fea/m5-approvals` | Codex | M3, M4 |
 | M6 | Interfaz (reglas, tablero, detalle, aprobaciones, subida) | `fea/m6-ui` | Antigravity | contratos de API |
 | M7 | Evaluación (autonomía/seguridad/precisión) + guion de demo | `fea/m7-eval` | OpenCode | M1, M3 |
-| M8 | Validadores Colombia (NIT/DV, CUFE, IVA, retenciones) | `fea/m8-colombia` | OpenCode | M3 |
+| M8 | Validadores regionales (Colombia: NIT/DV, CUFE, IVA, retenciones) | `fea/m8-colombia` | OpenCode | M3, M9 |
+| M9 | Multi-idioma (es/en/pt/fr/de/it) y validadores internacionales | `fea/m9-i18n` | Claude | M0 |
 
 Los módulos se construyen **en paralelo contra contratos fijos** (ARCHITECTURE.md §3). Nadie cambia un contrato sin un PR propio de contrato aprobado por el integrador.
 

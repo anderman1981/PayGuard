@@ -7,13 +7,15 @@
 | RF-01 | Extraer de cada factura: beneficiario, identificación fiscal, monto, moneda, fecha de emisión y vencimiento, número, contrato, datos bancarios, concepto | 100% de los campos del set extraídos o marcados con baja confianza (R01) |
 | RF-02 | Reglas configurables desde la pantalla | Cambiar una regla y reprocesar cambia las decisiones; cada cambio queda auditado |
 | RF-03 | Decidir PAGAR / FRENAR / ESCALAR | Coincide con `expected.outcome` en el 100% del set |
-| RF-04 | Explicar cada decisión en español | Cada decisión lista regla, resultado, motivo y evidencia |
+| RF-04 | Explicar cada decisión en el idioma del usuario | Cada decisión lista regla, resultado, motivo y evidencia |
 | RF-05 | Cola de aprobación humana | Aprobar/rechazar con nombre y motivo; solo para PENDIENTES |
 | RF-06 | Tablero: pagadas, frenadas, pendientes, con totales en USD | Filtros y búsqueda; detalle por factura |
 | RF-07 | Set de datos ficticio con casos normales y trampa | ≥ 30 facturas en 4 formatos, ≥ 10 tipos de trampa |
 | RF-08 | Métricas de autonomía, seguridad y precisión | `/api/metrics` y en la pantalla |
-| RF-09 | Subir una factura (incluida una colombiana real) y evaluarla | Solo con `PAYGUARD_ALLOW_UPLOAD=1`; se procesa en memoria y no se guarda |
-| RF-10 | Validar datos de pago colombianos | NIT con dígito de verificación, IVA 19%/5%/0%, total = subtotal + IVA − retenciones, CUFE con formato válido |
+| RF-09 | Subir una factura real de cualquier país y evaluarla | Solo con `PAYGUARD_ALLOW_UPLOAD=1`; se procesa en memoria y no se guarda |
+| RF-10 | Validar datos de pago internacionales | IBAN módulo 97, BIC, ABA routing, divisa ISO-4217 con sus decimales, país ISO-3166, cuadre de totales |
+| RF-11 | Validadores regionales según el país | Colombia: NIT con dígito de verificación, IVA 19/5/0, retenciones, CUFE |
+| RF-12 | Multi-idioma de entrada y salida | Detecta el idioma de la factura (es, en, pt, fr, de, it); responde en el idioma pedido, el del documento o inglés; montos y fechas con formato local |
 
 ## 2. No funcionales
 
@@ -21,12 +23,13 @@
 |---|---|---|
 | RNF-01 | Seguridad de decisión | 0 pagos fuera de reglas sin aprobación humana (test de propiedades ≥ 1.000 casos) |
 | RNF-02 | Integridad de auditoría | Cadena SHA-256 verificable; cualquier alteración se detecta |
-| RNF-03 | Privacidad | Ningún dato real en repo, logs ni demo pública; NIT y cuentas enmascarados en logs |
+| RNF-03 | Privacidad | Ningún dato real en repo, logs ni demo pública; identificadores fiscales y cuentas enmascarados en logs |
 | RNF-04 | Rendimiento | Set completo en modo caché < 2 s; por factura en vivo < 10 s |
 | RNF-05 | Disponibilidad de la demo | Funciona sin claves de IA (modo caché) |
 | RNF-06 | Calidad | Cobertura de líneas ≥ 90%, 0 errores de tipos, 0 hallazgos del gate de calidad |
 | RNF-07 | Accesibilidad | Contraste AA, navegable con teclado, usable a 375 px de ancho |
 | RNF-08 | Portabilidad | Misma imagen Docker en local y Railway |
+| RNF-09 | Internacionalización | 0 textos escritos a mano en la lógica; toda clave existe en los 6 idiomas (verificado por prueba) |
 
 ## 3. Requerimientos técnicos y de hardware
 
