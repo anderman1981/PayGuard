@@ -3,6 +3,10 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado según CONTRIBUTING.md §2.
 
 ## [Unreleased]
+### Fixed
+- RF-09: se implementa el handler `getProposals` que faltaba en `src/api/handlers.js`; `server.js` y las pruebas ya lo invocaban y rompían el arranque de `/api/proposals` y la suite.
+- RF-09: `postUpload` dejaba de funcionar por una variable `file` inexistente (el parámetro era `fileDoc`), por no importar `extractInvoice` y por iterar la factura única como si fuera un arreglo; ahora extrae, evalúa y registra la factura correctamente y valida que el payload traiga un archivo.
+- Pruebas: `test/api.test.js` cubre `getProposals` y los tres caminos de `postUpload` (desactivado, payload inválido y procesamiento en caché).
 
 ## [0.11.0] - 2026-10-17
 ### Added

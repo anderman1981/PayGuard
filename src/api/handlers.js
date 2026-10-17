@@ -8,6 +8,7 @@ import { processBatch } from '../agent.js';
 import { explain } from '../audit/explain.js';
 import { computeMetrics } from '../metrics.js';
 import { approve, reject } from '../approvals/queue.js';
+import { extractInvoice } from '../extraction/index.js';
 
 /** @typedef {import('./state.js').AppState} AppState */
 /** @typedef {import('../i18n/messages.js').Lang} Lang */
@@ -113,6 +114,9 @@ export const getAudit = (state) => ({ status: 200, body: state.audit.list() });
 /** @param {AppState} state @returns {Promise<ApiResponse>} */
 export const getAuditVerify = async (state) => ({ status: 200, body: await state.audit.verify() });
 
+/** @param {AppState} state @returns {ApiResponse} */
+export const getProposals = (state) => ({ status: 200, body: state.proposals });
+
 /**
  * @param {AppState} state
  * @param {{ id: string, outcome: import('../domain/types.js').Outcome }[]} expected
@@ -123,10 +127,19 @@ export const getMetrics = (state, expected = []) => ({
   body: { ...computeMetrics([...state.decisions.values()], expected), learning: state.cases.stats() },
 });
 
-/** @param {AppState} state @param {Object} fileDoc @param {Lang} lang @param {RuleContext} ctx @returns {Promise<ApiResponse>} */
-export async function postUpload(state, { file: fileDoc }, lang, ctx) {
+/**
+ * @param {AppState} state
+ * @param {{ file: { name: string, mime: string, bytes: ArrayLike<number> } }} payload
+ * @param {Lang} lang
+ * @param {import('../rules/helpers.js').RuleContext} ctx
+ * @returns {Promise<ApiResponse>}
+ */
+export async function postUpload(state, { file }, lang, ctx) {
   const allowed = process.env.PAYGUARD_ALLOW_UPLOAD === '1';
   if (!allowed) return { status: 403, body: { error: 'subida de facturas desactivada en este entorno' } };
+  if (!file || !file.name || !file.mime) {
+    return { status: 400, body: { errors: ['se requiere un archivo con nombre y tipo'] } };
+  }
 
   const doc = {
     id: file.name.replace(/\.[^/.]+$/, ''),
@@ -138,7 +151,7 @@ export async function postUpload(state, { file: fileDoc }, lang, ctx) {
   const { invoice, provider, attempts } = await extractInvoice(doc, { mode: 'cache' });
   const decisions = await processBatch([invoice], { ctx, audit: state.audit, cases: state.cases });
 
-  for (const inv of invoice) state.invoices.set(inv.id, inv);
+  state.invoices.set(invoice.id, invoice);
   for (const d of decisions) {
     state.decisions.set(d.invoiceId, d);
     for (const p of d.advice.proposals) {
@@ -151,7 +164,7 @@ export async function postUpload(state, { file: fileDoc }, lang, ctx) {
     body: {
       provider,
       attempts,
-      invoice: invoice[0],
+      invoice,
       decision: decisions[0],
       explanation: explain(decisions[0], lang),
     },
