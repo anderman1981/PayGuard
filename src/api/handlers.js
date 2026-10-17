@@ -151,12 +151,18 @@ export async function postNotify(state, input, deps = {}) {
     return { status: 200, body: { slack: 'desactivado', email: 'desactivado' } };
   }
   const result = { slack: 'sin configurar', email: 'sin configurar' };
-  if (slackWebhook) {
-    result.slack = isSlackWebhook(slackWebhook) ? await postJson(fetchImpl, slackWebhook, { text }) : 'url no permitida';
+  const effectiveSlack = slackWebhook || env.PAYGUARD_SLACK_WEBHOOK;
+  const effectiveEmail = email || env.PAYGUARD_NOTIFY_EMAIL;
+  if (effectiveSlack) {
+    result.slack = isSlackWebhook(effectiveSlack)
+      ? await postJson(fetchImpl, effectiveSlack, { text })
+      : 'url no permitida';
   }
-  if (email) {
+  if (effectiveEmail) {
     const hook = env.PAYGUARD_EMAIL_WEBHOOK;
-    result.email = hook ? await postJson(fetchImpl, hook, { to: email, text }) : 'requiere proveedor (PAYGUARD_EMAIL_WEBHOOK)';
+    result.email = hook
+      ? await postJson(fetchImpl, hook, { to: effectiveEmail, text })
+      : 'requiere proveedor (PAYGUARD_EMAIL_WEBHOOK)';
   }
   await state.audit.append({ type: 'notify', actor: 'agent', payload: { channels: result }, at: state.now });
   return { status: 200, body: result };
