@@ -136,3 +136,46 @@ test('las propuestas del consejero se acumulan sin repetirse', async () => {
   assert.equal(proposals[0].kind, 'raise-threshold');
   assert.equal(proposals[0].status, 'pending');
 });
+
+test('upload: rechaza con 403 cuando la subida está desactivada', async () => {
+  const prev = process.env.PAYGUARD_ALLOW_UPLOAD;
+  delete process.env.PAYGUARD_ALLOW_UPLOAD;
+  try {
+    const { state, ctx } = setup();
+    const res = await api.postUpload(state, { file: { name: 'f.pdf', mime: 'application/pdf', bytes: [] } }, 'es', ctx);
+    assert.equal(res.status, 403);
+  } finally {
+    if (prev === undefined) delete process.env.PAYGUARD_ALLOW_UPLOAD;
+    else process.env.PAYGUARD_ALLOW_UPLOAD = prev;
+  }
+});
+
+test('upload: valida que el payload traiga un archivo', async () => {
+  const prev = process.env.PAYGUARD_ALLOW_UPLOAD;
+  process.env.PAYGUARD_ALLOW_UPLOAD = '1';
+  try {
+    const { state, ctx } = setup();
+    const res = await api.postUpload(state, { file: null }, 'es', ctx);
+    assert.equal(res.status, 400);
+  } finally {
+    if (prev === undefined) delete process.env.PAYGUARD_ALLOW_UPLOAD;
+    else process.env.PAYGUARD_ALLOW_UPLOAD = prev;
+  }
+});
+
+test('upload: procesa el documento en modo caché y devuelve decisión', async () => {
+  const prev = process.env.PAYGUARD_ALLOW_UPLOAD;
+  process.env.PAYGUARD_ALLOW_UPLOAD = '1';
+  try {
+    const { state, ctx } = setup();
+    const res = await api.postUpload(state, { file: { name: 'factura-x.pdf', mime: 'application/pdf', bytes: [] } }, 'es', ctx);
+    assert.equal(res.status, 200);
+    assert.equal(res.body.provider, 'cache');
+    assert.equal(res.body.invoice.id, 'factura-x');
+    assert.ok(res.body.decision);
+    assert.ok(state.decisions.has('factura-x'));
+  } finally {
+    if (prev === undefined) delete process.env.PAYGUARD_ALLOW_UPLOAD;
+    else process.env.PAYGUARD_ALLOW_UPLOAD = prev;
+  }
+});
