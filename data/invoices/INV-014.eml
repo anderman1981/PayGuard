@@ -1,0 +1,16 @@
+From: facturacion@lauragomezcontratista.example
+To: pagos@andeslabs.example
+Subject: FACTURA LG-2026-10
+Date: 2026-10-01
+Content-Type: text/plain; charset=utf-8
+
+FACTURA LG-2026-10
+
+Proveedor: Laura Gomez (contratista)
+NIT/ID: CO-1020304050
+Fecha: 2026-10-01    Vence: 2026-10-31
+Contrato: CT-2026-002
+
+Concepto: Desarrollo backend octubre
+Total a pagar: 4,200 USD
+Cuenta: ****8812

@@ -17,7 +17,8 @@
     "version:show": "node scripts/version.js show",
     "version:bump": "node scripts/version.js bump",
     "version:check": "node scripts/version.js check",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dataset": "node scripts/generate-dataset.js"
   },
   "license": "MIT"
 }

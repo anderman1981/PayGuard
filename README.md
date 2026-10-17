@@ -28,7 +28,7 @@ PayGuard revisa las facturas de una empresa y decide por ella cuáles **pagar**,
 | Módulo | Qué hace | Estado |
 |---|---|---|
 | M0 | Dominio, reglas, guardia de solo lectura, servidor, Docker, gobierno y gates | ✅ |
-| M1 | 30+ facturas ficticias (PDF, PNG, correo, chat) con decisión esperada | ⏳ |
+| M1 | 32 facturas ficticias (PDF, PNG, correo, chat) con decisión esperada | ✅ |
 | M2 | Ingesta y extracción (LLM con respaldo + caché offline) | ⏳ |
 | M3 | Motor de reglas R01–R12 + política + pruebas de propiedades | ✅ |
 | M4 | Registro de auditoría encadenado + explicaciones + métricas | ✅ |
@@ -49,6 +49,7 @@ npm run setup     # activa los git hooks (una vez)
 # Local con Node 20+
 npm test          # pruebas
 npm run check     # calidad + cobertura (lo que exige el pre-commit)
+npm run dataset   # regenera data/invoices/ (32 facturas simuladas)
 npm start         # http://localhost:3000
 
 # Local con Docker

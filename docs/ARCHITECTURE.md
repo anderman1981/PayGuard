@@ -154,6 +154,17 @@ precisión y pagos inseguros. `src/approvals/queue.js` implementa la cola humana
 de la API, puros respecto al transporte; `server.js` solo enruta y pone las cabeceras
 de seguridad.
 
+### Implementación de M1
+
+`scripts/lib/dataset-specs.js` describe las 32 facturas (12 normales y 20 trampas, 21 tipos
+de caso) con su decisión esperada; `scripts/generate-dataset.js` las escribe en
+`data/invoices/` con el manifiesto y la extracción dorada. Los documentos se generan sin
+dependencias: `scripts/lib/pdf.js` escribe un PDF válido y `scripts/lib/png.js` una imagen
+PNG con la fuente de mapa de bits `scripts/lib/font5x7.js`.
+
+El orden del lote importa, porque los pagos simulados consumen saldo y presupuesto:
+primero las trampas, después los pagos normales y al final el caso de presupuesto agotado.
+
 ## 4. Estructura de carpetas
 
 ```
