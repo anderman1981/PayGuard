@@ -8,13 +8,18 @@ import { money, counts, filterRows, parseRulesForm, metricTiles, TONE } from './
 import { viewIngesta } from './ingesta.js';
 import { viewCorrida } from './corrida.js';
 import { createNotifier } from './notify.js';
+import { viewAuditoria } from './auditoria.js';
+import { viewApiDocs } from './apidocs.js';
+import { viewFacturas } from './facturas.js';
 
 /** @type {ReturnType<typeof createNotifier>|null} */
 let notifier = null;
 
+
 const VIEWS = [
   ['resumen', 'Resumen'], ['corrida', 'Hoy'], ['ingesta', 'Ingesta'], ['facturas', 'Facturas'],
   ['aprobaciones', 'Aprobaciones'], ['reglas', 'Reglas'], ['auditoria', 'Auditoría'],
+  ['apidocs', 'API Docs'],
 ];
 
 const state = {
@@ -95,57 +100,6 @@ function viewResumen() {
   return el('div', {}, [empty, grid, prop].filter(Boolean));
 }
 
-function viewFacturas() {
-  const search = el('input', { id: 'q', type: 'search', placeholder: 'Buscar por id, regla o estado', value: state.query });
-  search.addEventListener('input', () => { state.query = /** @type {HTMLInputElement} */ (search).value; paintTable(); });
-
-  const select = el('select', { id: 'f', 'aria-label': 'Filtrar por resultado' }, [
-    el('option', { value: 'ALL', text: 'Todas' }), el('option', { value: 'PAY', text: 'Pagadas' }),
-    el('option', { value: 'HOLD', text: 'Frenadas' }), el('option', { value: 'ESCALATE', text: 'Pendientes' }),
-  ]);
-  /** @type {HTMLSelectElement} */ (select).value = state.outcome;
-  select.addEventListener('change', () => { state.outcome = /** @type {HTMLSelectElement} */ (select).value; paintTable(); });
-
-  const body = el('tbody', { id: 'rows' });
-  const HDRS = ['Factura', 'Beneficiario', 'Monto', 'Resultado', 'Reglas marcadas', 'Decidió'];
-  const table = el('table', {}, [
-    el('thead', {}, [el('tr', {}, HDRS.map((h) => el('th', { text: h })))]),
-    body,
-  ]);
-  const wrap = el('div', {}, [el('div', { class: 'topbar' }, [search, select]), table]);
-  queueMicrotask(paintTable);
-  return wrap;
-}
-
-function paintTable() {
-  const body = document.getElementById('rows');
-  if (!body) return;
-  body.textContent = '';
-  const rows = filterRows(state.decisions, { outcome: state.outcome, query: state.query });
-  if (rows.length === 0) {
-    const empty = el('td', { colspan: '6', class: 'muted', text: 'Sin resultados. Procesa las facturas primero.' });
-    body.append(el('tr', {}, [empty]));
-    return;
-  }
-  for (const r of rows) {
-    const inv = state.invoices.find((i) => i.id === r.invoiceId)?.extraction ?? {};
-    const tr = el('tr', { tabindex: '0' }, [
-      el('td', {}, [el('span', { class: 'mono', text: r.invoiceId })]),
-      el('td', { text: String(/** @type {any} */ (inv).counterpartyName ?? '—') }),
-      el('td', { class: 'mono', text: money(
-        /** @type {number} */ (/** @type {any} */ (inv).amount),
-        /** @type {string} */ (/** @type {any} */ (inv).currency),
-        state.lang,
-      ) }),
-      el('td', {}, [el('span', { class: `pill ${TONE[r.outcome]}`, text: r.summary.split(' · ')[0] })]),
-      el('td', { class: 'mono muted', text: (r.failed ?? []).join(', ') || '—' }),
-      el('td', { class: 'muted', text: r.decidedBy === 'human' ? 'Persona' : 'Agente' }),
-    ]);
-    tr.addEventListener('click', () => openDrawer(r.invoiceId));
-    tr.addEventListener('keydown', (e) => { if (/** @type {KeyboardEvent} */ (e).key === 'Enter') openDrawer(r.invoiceId); });
-    body.append(tr);
-  }
-}
 
 function viewAprobaciones() {
   const pending = state.decisions.filter((d) => d.outcome === 'ESCALATE');
@@ -175,7 +129,7 @@ function viewAprobaciones() {
     ok.addEventListener('click', () => send('approve'));
     no.addEventListener('click', () => send('reject'));
 
-    return el('div', { class: 'rule' }, [
+    return el('div', { class: 'rule', tabindex: '0' }, [
       el('header', {}, [el('span', { class: 'pill wait', text: 'Pendiente' }), el('strong', { class: 'mono', text: d.invoiceId })]),
       el('p', { text: d.explanation }),
       el('div', { class: 'topbar' }, [who, why, ok, no]),
@@ -218,40 +172,6 @@ function viewReglas() {
   return el('div', { class: 'stack' }, [
     el('p', { class: 'muted', text: 'Cada cambio queda registrado en la auditoría con quién lo hizo.' }),
     grid, el('div', {}, [save]),
-  ]);
-}
-
-function viewAuditoria() {
-  const check = el('button', { class: 'btn ghost', type: 'button', text: 'Verificar integridad' });
-  check.addEventListener('click', async () => {
-    const r = await api('/audit/verify');
-    const text = r.ok
-      ? `Cadena íntegra: ${r.length} entradas verificadas.`
-      : `Cadena rota en la entrada ${r.brokenAt}.`;
-    setNotice(text, r.ok ? 'ok' : 'stop');
-  });
-
-  const rows = state.audit.map((e) => {
-    const tr = el('tr', { tabindex: '0' }, [
-      el('td', { class: 'mono', text: String(e.index) }),
-      el('td', { text: String(e.type) }),
-      el('td', { class: 'mono', text: String(e.invoiceId ?? '—') }),
-      el('td', { text: String(e.actor) }),
-      el('td', { class: 'mono muted', text: String(e.hash).slice(0, 12) }),
-    ]);
-    if (e.invoiceId) {
-      tr.style.cursor = 'pointer';
-      tr.addEventListener('click', () => openDrawer(String(e.invoiceId)));
-      tr.addEventListener('keydown', (/** @type {KeyboardEvent} */ ev) => { if (ev.key === 'Enter') openDrawer(String(e.invoiceId)); });
-    }
-    return tr;
-  });
-  return el('div', { class: 'stack' }, [
-    el('div', {}, [check]),
-    el('table', {}, [
-      el('thead', {}, [el('tr', {}, ['#', 'Tipo', 'Factura', 'Quién', 'Hash'].map((h) => el('th', { text: h })))]),
-      el('tbody', {}, rows.length ? rows : [el('tr', {}, [el('td', { colspan: '5', class: 'muted', text: 'Sin entradas.' })])]),
-    ]),
   ]);
 }
 
@@ -331,10 +251,15 @@ function render() {
   if (state.notice) view.append(el('div', { class: `notice ${state.notice.tone}`, text: state.notice.text }));
   const builders = {
     resumen: viewResumen,
-    corrida: () => viewCorrida({ el, api, state, setNotice, notify: (d) => notifier && notifier.sync(d), openDrawer }),
+    corrida: () => viewCorrida({
+      el, api, state, setNotice, notify: (d) => notifier && notifier.sync(d), openDrawer,
+    }),
     ingesta: () => viewIngesta({ el, api, state, setNotice, refresh }),
-    facturas: viewFacturas, aprobaciones: viewAprobaciones,
-    reglas: viewReglas, auditoria: viewAuditoria,
+    facturas: () => viewFacturas({ el, state, openDrawer }),
+    aprobaciones: viewAprobaciones,
+    reglas: viewReglas,
+    auditoria: () => viewAuditoria({ el, api, state, setNotice, openDrawer }),
+    apidocs: () => viewApiDocs({ el }),
   };
   view.append(builders[state.view]());
 }

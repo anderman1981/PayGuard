@@ -128,6 +128,10 @@ pre {
   th:nth-child(3), td:nth-child(3) { display: none; }
 }
 
+/* Columnas ordenables */
+.th-sort { cursor: pointer; user-select: none; }
+.th-sort:hover { color: var(--ink); background: var(--panel-2); }
+
 /* Ingesta: tabs internas */
 .tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--seam); }
 .tab { border: 0; background: transparent; color: var(--ink-2); font: inherit; cursor: pointer;
