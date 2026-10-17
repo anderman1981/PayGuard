@@ -176,6 +176,18 @@ Gemini → Groq → OpenRouter → Ollama con su interruptor, y `src/extraction/
 ofrece `extractInvoice` en modo caché (demo y pruebas, sin llamar a nadie) o en vivo.
 Si ningún proveedor responde, devuelve confianza 0 y R01 escala.
 
+### Implementación de M6
+
+`public/index.html` es el armazón (barra lateral, selector de idioma, botón de procesar),
+`public/app.css` el lenguaje visual con modo claro y oscuro, `public/lib.js` la lógica pura
+(formato, filtros, conteos, conversión del formulario de reglas) y `public/app.js` las cinco
+vistas: Resumen, Facturas, Aprobaciones, Reglas y Auditoría.
+
+Sin build y sin dependencias. Nada se inserta como marcado: todo el contenido pasa por
+`textContent`, así una factura no puede inyectar HTML, y no hay scripts en línea, de modo
+que la CSP `default-src 'self'` se cumple sin excepciones. Las pruebas cubren la lógica pura
+y verifican esas dos garantías leyendo los archivos.
+
 ## 4. Estructura de carpetas
 
 ```

@@ -3,32 +3,47 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="PayGuard: agente que decide qué facturas pagar, frenar o escalar dentro de las reglas de la empresa." />
   <title>PayGuard</title>
-  <style>
-    :root { --bed:#f4f5f7; --field:#fff; --ink:#15171c; --ink-2:#5b6070; --accent:#4338ca; --seam:#e6e8ee; }
-    @media (prefers-color-scheme: dark) { :root { --bed:#0f1013; --field:#17191e; --ink:#eceef2; --ink-2:#9aa0ad; --accent:#818cf8; --seam:#262a31; } }
-    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bed); color:var(--ink); }
-    main { max-width:720px; margin:12vh auto; padding:0 16px; }
-    .card { background:var(--field); border-radius:20px; padding:28px; border:1px solid var(--seam); }
-    h1 { font-size:22px; margin:0 0 8px; } p { color:var(--ink-2); line-height:1.5; }
-    .pill { display:inline-block; background:var(--accent); color:#fff; border-radius:999px; padding:6px 14px; font-size:14px; }
-  </style>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234338ca'/%3E%3Cpath d='M16 7l7 3v6c0 4.4-3 8-7 9-4-1-7-4.6-7-9v-6z' fill='%23fff'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/app.css" />
 </head>
 <body>
-  <main>
-    <div class="card">
-      <h1>PayGuard</h1>
-      <p>Agente que decide qué facturas pagar, frenar o escalar dentro de las reglas de la empresa. Prototipo para el reto Blinka · Hackathon 30X.</p>
-      <p id="status">Comprobando servicio…</p>
-      <span class="pill">M0 · en construcción</span>
-    </div>
-  </main>
-  <script type="module">
-    const el = document.getElementById('status');
-    try {
-      const [h, c] = await Promise.all([fetch('/api/health').then(r => r.json()), fetch('/api/company').then(r => r.json())]);
-      el.textContent = `Servicio activo (modo ${h.mode}) · Empresa ficticia: ${c.company.name} · ${c.counterparties.length} contrapartes`;
-    } catch { el.textContent = 'No se pudo contactar la API.'; }
-  </script>
+  <div class="shell">
+    <nav class="rail" aria-label="Secciones">
+      <div class="brand">
+        <span class="mark" aria-hidden="true">PG</span>
+        <strong>PayGuard<small>Prototipo · reto Blinka</small></strong>
+      </div>
+      <div class="nav" id="nav"></div>
+      <footer>
+        <span id="version">—</span><br />
+        Datos ficticios · no mueve dinero
+      </footer>
+    </nav>
+
+    <main class="sheet">
+      <div>
+        <div class="topbar">
+          <h1 id="title">Resumen</h1>
+          <span class="grow"></span>
+          <label for="lang" class="muted">Idioma</label>
+          <select id="lang" aria-label="Idioma de las explicaciones">
+            <option value="es">Español</option>
+            <option value="en">English</option>
+            <option value="pt">Português</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="it">Italiano</option>
+          </select>
+          <button class="btn" id="run" type="button">Procesar facturas</button>
+        </div>
+        <div id="view" aria-live="polite"></div>
+      </div>
+    </main>
+  </div>
+
+  <aside class="drawer" id="drawer" hidden aria-label="Detalle de la factura"></aside>
+  <script type="module" src="/app.js"></script>
 </body>
 </html>

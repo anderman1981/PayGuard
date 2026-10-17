@@ -4,6 +4,15 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-10-17
+### Added
+- M6: interfaz con cinco vistas (Resumen, Facturas, Aprobaciones, Reglas, Auditoría), selector de idioma y botón para procesar el lote.
+- M6: tabla de facturas con búsqueda y filtro, y panel de detalle con el resultado de cada regla, la explicación y el documento leído.
+- M6: aprobar o rechazar desde la pantalla, editar las reglas y verificar la integridad de la cadena de auditoría.
+- Lógica pura de la interfaz en `public/lib.js`, con pruebas propias.
+### Security
+- La interfaz no usa marcado dinámico ni scripts en línea; se verifica con pruebas, de modo que la CSP `default-src 'self'` se cumple sin excepciones.
+
 ## [0.7.0] - 2026-10-17
 ### Added
 - M2: `validateExtraction` rechaza campos desconocidos, exige fecha ISO, divisa ISO-4217 y monto numérico, y normaliza lo que varía entre modelos.
