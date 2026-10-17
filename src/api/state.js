@@ -32,6 +32,24 @@ export function createState(companyUrl, now = new Date()) {
 /** @typedef {ReturnType<typeof createState>} AppState */
 
 /**
+ * Reinicia el estado en memoria al mismo punto que un despliegue limpio.
+ * @param {AppState} state
+ * @param {URL} companyUrl
+ */
+export function resetState(state, companyUrl) {
+  const company = JSON.parse(readFileSync(companyUrl, 'utf8'));
+  state.company = company;
+  state.rules = structuredClone(DEFAULT_RULES);
+  state.account = new MockAccountSource(company);
+  state.audit = new AuditLog();
+  state.cases = new CaseStore();
+  state.decisions = new Map();
+  state.invoices = new Map();
+  state.proposals = [];
+  state.now = new Date();
+}
+
+/**
  * Contexto de reglas para la petición actual.
  * @param {AppState} state
  * @param {import('../i18n/messages.js').Lang} lang

@@ -107,8 +107,9 @@ function viewFacturas() {
   select.addEventListener('change', () => { state.outcome = /** @type {HTMLSelectElement} */ (select).value; paintTable(); });
 
   const body = el('tbody', { id: 'rows' });
+  const HDRS = ['Factura', 'Beneficiario', 'Monto', 'Resultado', 'Reglas marcadas', 'Decidió'];
   const table = el('table', {}, [
-    el('thead', {}, [el('tr', {}, ['Factura', 'Resultado', 'Reglas marcadas', 'Decidió'].map((h) => el('th', { text: h })))]),
+    el('thead', {}, [el('tr', {}, HDRS.map((h) => el('th', { text: h })))]),
     body,
   ]);
   const wrap = el('div', {}, [el('div', { class: 'topbar' }, [search, select]), table]);
@@ -122,13 +123,20 @@ function paintTable() {
   body.textContent = '';
   const rows = filterRows(state.decisions, { outcome: state.outcome, query: state.query });
   if (rows.length === 0) {
-    const empty = el('td', { colspan: '4', class: 'muted', text: 'Sin resultados. Procesa las facturas primero.' });
+    const empty = el('td', { colspan: '6', class: 'muted', text: 'Sin resultados. Procesa las facturas primero.' });
     body.append(el('tr', {}, [empty]));
     return;
   }
   for (const r of rows) {
+    const inv = state.invoices.find((i) => i.id === r.invoiceId)?.extraction ?? {};
     const tr = el('tr', { tabindex: '0' }, [
       el('td', {}, [el('span', { class: 'mono', text: r.invoiceId })]),
+      el('td', { text: String(/** @type {any} */ (inv).counterpartyName ?? '—') }),
+      el('td', { class: 'mono', text: money(
+        /** @type {number} */ (/** @type {any} */ (inv).amount),
+        /** @type {string} */ (/** @type {any} */ (inv).currency),
+        state.lang,
+      ) }),
       el('td', {}, [el('span', { class: `pill ${TONE[r.outcome]}`, text: r.summary.split(' · ')[0] })]),
       el('td', { class: 'mono muted', text: (r.failed ?? []).join(', ') || '—' }),
       el('td', { class: 'muted', text: r.decidedBy === 'human' ? 'Persona' : 'Agente' }),
@@ -223,13 +231,21 @@ function viewAuditoria() {
     setNotice(text, r.ok ? 'ok' : 'stop');
   });
 
-  const rows = state.audit.map((e) => el('tr', {}, [
-    el('td', { class: 'mono', text: String(e.index) }),
-    el('td', { text: String(e.type) }),
-    el('td', { class: 'mono', text: String(e.invoiceId ?? '—') }),
-    el('td', { text: String(e.actor) }),
-    el('td', { class: 'mono muted', text: String(e.hash).slice(0, 12) }),
-  ]));
+  const rows = state.audit.map((e) => {
+    const tr = el('tr', { tabindex: '0' }, [
+      el('td', { class: 'mono', text: String(e.index) }),
+      el('td', { text: String(e.type) }),
+      el('td', { class: 'mono', text: String(e.invoiceId ?? '—') }),
+      el('td', { text: String(e.actor) }),
+      el('td', { class: 'mono muted', text: String(e.hash).slice(0, 12) }),
+    ]);
+    if (e.invoiceId) {
+      tr.style.cursor = 'pointer';
+      tr.addEventListener('click', () => openDrawer(String(e.invoiceId)));
+      tr.addEventListener('keydown', (/** @type {KeyboardEvent} */ ev) => { if (ev.key === 'Enter') openDrawer(String(e.invoiceId)); });
+    }
+    return tr;
+  });
   return el('div', { class: 'stack' }, [
     el('div', {}, [check]),
     el('table', {}, [
@@ -315,7 +331,7 @@ function render() {
   if (state.notice) view.append(el('div', { class: `notice ${state.notice.tone}`, text: state.notice.text }));
   const builders = {
     resumen: viewResumen,
-    corrida: () => viewCorrida({ el, api, state, setNotice, notify: (d) => notifier && notifier.sync(d) }),
+    corrida: () => viewCorrida({ el, api, state, setNotice, notify: (d) => notifier && notifier.sync(d), openDrawer }),
     ingesta: () => viewIngesta({ el, api, state, setNotice, refresh }),
     facturas: viewFacturas, aprobaciones: viewAprobaciones,
     reglas: viewReglas, auditoria: viewAuditoria,
@@ -341,6 +357,29 @@ async function start() {
     setNotice('Procesando…', 'ok');
     await runBatch();
     setNotice(`${state.decisions.length} facturas procesadas.`, 'ok');
+  });
+
+  const resetBtn = /** @type {HTMLButtonElement} */ ($('reset-demo'));
+  let resetPending = false;
+  resetBtn.addEventListener('click', async () => {
+    if (!resetPending) {
+      resetPending = true;
+      resetBtn.textContent = '¿Confirmar? Clic de nuevo';
+      resetBtn.classList.add('btn-warn');
+      setTimeout(() => { resetPending = false; resetBtn.textContent = '↺ Reiniciar demo'; resetBtn.classList.remove('btn-warn'); }, 4000);
+      return;
+    }
+    resetPending = false;
+    resetBtn.textContent = '↺ Reiniciar demo';
+    resetBtn.classList.remove('btn-warn');
+    setNotice('Reiniciando estado…', 'ok');
+    await api('/reset', { method: 'POST' });
+    await refresh();
+    setNotice('Generando facturas ficticias…', 'ok');
+    render();
+    await runBatch();
+    state.view = 'resumen';
+    setNotice(`✓ Demo lista: ${state.decisions.length} facturas ficticias generadas y evaluadas.`, 'ok');
   });
 
   await refresh();
