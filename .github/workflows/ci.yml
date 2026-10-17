@@ -6,6 +6,32 @@ on:
     branches: [main, staging, dev]
 
 jobs:
+  ladder:
+    name: Escalera de ramas
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Respetar la escalera fea|fix → dev → staging → main
+        env:
+          BASE: ${{ github.base_ref }}
+          HEAD: ${{ github.head_ref }}
+        run: |
+          echo "PR: $HEAD → $BASE"
+          case "$BASE" in
+            main)
+              [ "$HEAD" = "staging" ] || { echo "::error::main solo recibe de staging (origen: $HEAD)"; exit 1; } ;;
+            staging)
+              [ "$HEAD" = "dev" ] || { echo "::error::staging solo recibe de dev (origen: $HEAD)"; exit 1; } ;;
+            dev)
+              case "$HEAD" in
+                fea/*|fix/*) : ;;
+                *) echo "::error::dev solo recibe de fea/* o fix/* (origen: $HEAD)"; exit 1 ;;
+              esac ;;
+            *)
+              echo "rama base '$BASE' sin regla de escalera; se permite" ;;
+          esac
+          echo "escalera respetada"
+
   gates:
     runs-on: ubuntu-latest
     steps:
@@ -17,7 +43,8 @@ jobs:
         run: npm run quality
       - name: Pruebas con cobertura
         run: npm run coverage
-      - name: Tipos
+      - name: Tipos (TS completo, informativo — el gate real es el ts-check de quality.js)
+        continue-on-error: true
         run: npm run typecheck
       - name: Versión de la rama
         if: startsWith(github.head_ref || github.ref_name, 'fea/') || startsWith(github.head_ref || github.ref_name, 'fix/')

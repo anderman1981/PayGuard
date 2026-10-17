@@ -12,7 +12,7 @@
     "test": "node --test test/*.test.js",
     "coverage": "node --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-branches=85 --test-coverage-functions=90 test/*.test.js",
     "quality": "node scripts/quality.js",
-    "typecheck": "npx -y typescript@5.9.2 --noEmit -p jsconfig.json",
+    "typecheck": "npx -y -p typescript@5.9.2 tsc --noEmit -p jsconfig.json",
     "check": "npm run quality && npm run coverage",
     "version:show": "node scripts/version.js show",
     "version:bump": "node scripts/version.js bump",
