@@ -4,6 +4,15 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-17
+### Added
+- M2: `validateExtraction` rechaza campos desconocidos, exige fecha ISO, divisa ISO-4217 y monto numérico, y normaliza lo que varía entre modelos.
+- M2: `parseAmount` interpreta montos en cualquier convención de separadores ("1.234,56", "1,234.56", "2.800").
+- M2: instrucción que declara el documento como dato y prohíbe obedecerlo, inventar o hacer cuentas.
+- M2: cadena Gemini → Groq → OpenRouter → Ollama con interruptor (dos fallos, o uno si es cuota) y tiempo de espera; los documentos binarios solo van a proveedores que leen imágenes.
+- M2: modo caché que usa la extracción dorada del set, para que la demo pública y las pruebas no llamen a ningún modelo.
+- Si ningún proveedor responde, la extracción sale con confianza 0 y R01 escala: nunca se paga a ciegas.
+
 ## [0.6.0] - 2026-10-17
 ### Added
 - M1: set de 32 facturas ficticias en PDF, PNG, correo y chat, con 21 tipos de caso (12 normales y 20 trampas) y la decisión esperada de cada una.

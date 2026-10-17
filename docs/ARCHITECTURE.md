@@ -165,6 +165,17 @@ PNG con la fuente de mapa de bits `scripts/lib/font5x7.js`.
 El orden del lote importa, porque los pagos simulados consumen saldo y presupuesto:
 primero las trampas, después los pagos normales y al final el caso de presupuesto agotado.
 
+### Implementación de M2
+
+`src/extraction/schema.js` valida y normaliza la salida del modelo: rechaza campos
+desconocidos (un modelo no puede inyectar datos que el motor no espera), exige fecha
+ISO, divisa ISO-4217 y monto numérico, e interpreta montos escritos en cualquier
+convención (`parseAmount`). `src/extraction/prompt.js` arma la instrucción, que declara
+el documento como dato y prohíbe inventar. `src/extraction/providers.js` tiene la cadena
+Gemini → Groq → OpenRouter → Ollama con su interruptor, y `src/extraction/index.js`
+ofrece `extractInvoice` en modo caché (demo y pruebas, sin llamar a nadie) o en vivo.
+Si ningún proveedor responde, devuelve confianza 0 y R01 escala.
+
 ## 4. Estructura de carpetas
 
 ```
@@ -173,7 +184,7 @@ src/config       reglas por defecto y su validación (default-rules.js)
 src/integrations account-source.js (fuente de cuenta: saldos, contrapartes, contratos,
                  historial; hoy MockAccountSource, mañana Blinka de solo lectura)
                  y readonly-guard.js (bloquea todo movimiento de dinero)
-src/extraction   M2
+src/extraction   M2 (schema.js, prompt.js, providers.js, index.js)
 src/rules        M3
 src/audit        M4 (log.js cadena SHA-256, explain.js texto legible)
 src/approvals    M5
