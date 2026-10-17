@@ -4,6 +4,18 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-17
+### Added
+- M4: registro de auditoría encadenado con SHA-256; alterar o borrar una entrada rompe `verify()`.
+- M4: explicaciones legibles re-traducibles a cualquier idioma (cada resultado guarda su clave de mensaje, no solo el texto).
+- `src/agent.js`: procesa una factura de punta a punta (reglas, consejo, política, pago simulado, auditoría y memoria de casos).
+- `src/metrics.js`: autonomía, precisión, pagos inseguros y diferencias contra lo esperado.
+- M5: cola de aprobación humana; una factura frenada no se puede aprobar y al aprobar se revalidan duplicado, presupuesto y saldo.
+- API completa: `/api/run`, `/api/decisions`, `/api/approvals/:id`, `/api/audit`, `/api/audit/verify`, `/api/metrics`, `/api/proposals`.
+- Cabeceras de seguridad en toda respuesta y token de administración para las operaciones que cambian estado.
+### Fixed
+- El texto canónico de la auditoría ahora ordena claves a cualquier profundidad: antes una alteración dentro del payload no rompía la cadena.
+
 ## [0.4.0] - 2026-10-17
 ### Added
 - M10: memoria de casos (RAG) sin dependencias — vectores deterministas, `CaseStore` con resolución humana y búsqueda por similitud.

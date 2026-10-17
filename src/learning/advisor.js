@@ -107,6 +107,7 @@ export function applyAdvice(results, advice, reason = 'Casos parecidos fueron re
   return [...results, {
     ruleId: 'A01',
     name: 'Memoria de casos',
+    nameKey: 'a01.name',
     verdict: /** @type {const} */ ('ESCALATE'),
     reason,
     messageKey: 'a01.similarRejected',

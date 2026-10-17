@@ -76,9 +76,12 @@
 /**
  * @typedef {Object} RuleResult
  * @property {string} ruleId
- * @property {string} name
+ * @property {string} name           nombre ya traducido
+ * @property {string} [nameKey]      clave del nombre, para re-traducir a otro idioma
  * @property {RuleVerdict} verdict
- * @property {string} reason          explicación en español, legible sin abrir el código
+ * @property {string} reason          motivo ya traducido, legible sin abrir el código
+ * @property {string} [messageKey]    clave del motivo, para re-traducir
+ * @property {Record<string, string|number>} [vars]
  * @property {Record<string, unknown>} evidence
  */
 

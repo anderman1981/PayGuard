@@ -143,6 +143,17 @@ El consejo entra después del motor y antes de la política. Nunca quita ni reba
 resultado de una regla, y ningún umbral cambia sin que una persona apruebe la propuesta.
 Detalle y justificación en [AI-AND-LEARNING.md](AI-AND-LEARNING.md) y el ADR 0004.
 
+### Implementación de M4 y M5
+
+`src/agent.js` une todo: evalúa, aplica el consejo, decide, registra el pago simulado,
+audita y guarda el caso. `src/audit/log.js` es la cadena SHA-256 (`append`, `verify`,
+`list`) y `src/audit/explain.js` arma el texto legible, re-traducible a cualquier idioma
+porque cada resultado guarda su clave de mensaje. `src/metrics.js` calcula autonomía,
+precisión y pagos inseguros. `src/approvals/queue.js` implementa la cola humana.
+`src/api/state.js` guarda el estado de la demo y `src/api/handlers.js` los manejadores
+de la API, puros respecto al transporte; `server.js` solo enruta y pone las cabeceras
+de seguridad.
+
 ## 4. Estructura de carpetas
 
 ```
@@ -153,7 +164,7 @@ src/integrations account-source.js (fuente de cuenta: saldos, contrapartes, cont
                  y readonly-guard.js (bloquea todo movimiento de dinero)
 src/extraction   M2
 src/rules        M3
-src/audit        M4
+src/audit        M4 (log.js cadena SHA-256, explain.js texto legible)
 src/approvals    M5
 src/i18n         M9 (catálogo, detección y formato por idioma)
 src/learning     M10 (memoria de casos, vectores y consejero)

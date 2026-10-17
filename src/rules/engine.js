@@ -39,6 +39,7 @@ export function evaluateInvoice(inv, ctx) {
       return {
         ruleId: rule.id,
         name: t(rule.nameKey, lang),
+        nameKey: rule.nameKey,
         verdict: out.verdict,
         reason: out.messageKey ? t(out.messageKey, lang, out.vars ?? {}) : t(`verdict.${out.verdict}`, lang),
         messageKey: out.messageKey ?? `verdict.${out.verdict}`,
@@ -49,6 +50,7 @@ export function evaluateInvoice(inv, ctx) {
       return {
         ruleId: rule.id,
         name: t(rule.nameKey, lang),
+        nameKey: rule.nameKey,
         verdict: /** @type {const} */ ('ESCALATE'),
         reason: t('verdict.ESCALATE', lang),
         messageKey: 'verdict.ESCALATE',
