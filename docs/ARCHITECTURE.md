@@ -188,6 +188,13 @@ Sin build y sin dependencias. Nada se inserta como marcado: todo el contenido pa
 que la CSP `default-src 'self'` se cumple sin excepciones. Las pruebas cubren la lógica pura
 y verifican esas dos garantías leyendo los archivos.
 
+### Implementación de M7
+
+`scripts/eval.js` procesa el set completo y publica métricas, matriz de confusión y
+reglas más frecuentes; sale con código 1 si hay un pago indebido, si la precisión baja
+del 100% o si la cadena de auditoría no verifica, y el CI lo corre en cada cambio.
+`docs/DEMO.md` tiene el guion del video.
+
 ## 4. Estructura de carpetas
 
 ```

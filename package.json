@@ -18,7 +18,8 @@
     "version:bump": "node scripts/version.js bump",
     "version:check": "node scripts/version.js check",
     "start": "node server.js",
-    "dataset": "node scripts/generate-dataset.js"
+    "dataset": "node scripts/generate-dataset.js",
+    "eval": "node scripts/eval.js"
   },
   "license": "MIT"
 }

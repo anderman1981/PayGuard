@@ -24,6 +24,8 @@ jobs:
         run: |
           git fetch origin dev:dev || true
           npm run version:check
+      - name: Evaluación del set (0 pagos indebidos, 100% de precisión)
+        run: npm run eval
       - name: Imagen Docker
         run: docker build -t payguard:ci .
       - name: Arranque y healthcheck

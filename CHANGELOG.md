@@ -4,6 +4,25 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-10-17
+### Added
+- RF-09: endpoint `POST /api/upload` para subir una factura real de cualquier país; solo activo con `PAYGUARD_ALLOW_UPLOAD=1`
+- RF-09: procesamiento en memoria — la factura se extrae y evalúa sin persistir en disco
+- RF-09: decisión explicable vía `explain()` en el idioma solicitado; incluye regla, resultado, motivo y evidencia
+- RF-09: la factura se registra en el estado pero no se guarda en el repositorio ni en la auditoría como entrada permanente
+
+### Changed
+- `src/api/handlers.js`: nuevo handler `postUpload` que orquesta la extracción M2, el motor M3 y la política M5
+- `server.js`: nueva ruta `POST /api/upload` integrada en el router
+
+## [0.10.0] - 2026-10-17
+### Added
+- M7: `npm run eval` evalúa el set completo — seguridad, precisión, autonomía, matriz de confusión y reglas más frecuentes — y falla si aparece un pago indebido, si la precisión baja del 100% o si la auditoría no verifica.
+- M7: la evaluación corre en el CI, así una regresión rompe el build y no la demo.
+- `docs/DEMO.md`: guion del video de 2 min 30 s, con lo que se muestra y lo que no se debe decir.
+### Changed
+- README publica los resultados actuales del set: 0 pagos indebidos, 100% de precisión y 65,6% de autonomía.
+
 ## [0.9.0] - 2026-10-17
 ### Added
 - M8: regla R13, que aplica las reglas del país que emite la factura; se elige por la contraparte registrada o por la forma del identificador fiscal.

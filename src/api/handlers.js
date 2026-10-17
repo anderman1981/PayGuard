@@ -123,5 +123,37 @@ export const getMetrics = (state, expected = []) => ({
   body: { ...computeMetrics([...state.decisions.values()], expected), learning: state.cases.stats() },
 });
 
-/** @param {AppState} state @returns {ApiResponse} */
-export const getProposals = (state) => ({ status: 200, body: state.proposals });
+/** @param {AppState} state @param {Object} fileDoc @param {Lang} lang @param {RuleContext} ctx @returns {Promise<ApiResponse>} */
+export async function postUpload(state, { file: fileDoc }, lang, ctx) {
+  const allowed = process.env.PAYGUARD_ALLOW_UPLOAD === '1';
+  if (!allowed) return { status: 403, body: { error: 'subida de facturas desactivada en este entorno' } };
+
+  const doc = {
+    id: file.name.replace(/\.[^/.]+$/, ''),
+    source: file.mime.startsWith('image/') ? 'image' : 'pdf',
+    bytes: new Uint8Array(file.bytes),
+    mime: file.mime,
+  };
+
+  const { invoice, provider, attempts } = await extractInvoice(doc, { mode: 'cache' });
+  const decisions = await processBatch([invoice], { ctx, audit: state.audit, cases: state.cases });
+
+  for (const inv of invoice) state.invoices.set(inv.id, inv);
+  for (const d of decisions) {
+    state.decisions.set(d.invoiceId, d);
+    for (const p of d.advice.proposals) {
+      if (!state.proposals.some((x) => x.kind === p.kind && x.subject === p.subject)) state.proposals.push(p);
+    }
+  }
+
+  return {
+    status: 200,
+    body: {
+      provider,
+      attempts,
+      invoice: invoice[0],
+      decision: decisions[0],
+      explanation: explain(decisions[0], lang),
+    },
+  };
+}

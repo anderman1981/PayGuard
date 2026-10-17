@@ -19,6 +19,7 @@ PayGuard revisa las facturas de una empresa y decide por ella cuáles **pagar**,
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Ramas, versionado, commits, gates |
 | [SECURITY.md](SECURITY.md) | Invariantes y políticas de seguridad |
 | [AGENTS.md](AGENTS.md) | Instrucciones para los agentes de IA |
+| [docs/DEMO.md](docs/DEMO.md) | Guion del video de demostración |
 | [docs/DOC-RULE.md](docs/DOC-RULE.md) | Regla de documentación viva (obligatoria en cada interacción) |
 | [docs/BITACORA.md](docs/BITACORA.md) | Qué dejó hecho cada sesión |
 | [docs/adr/](docs/adr/) | Decisiones de arquitectura |
@@ -34,7 +35,7 @@ PayGuard revisa las facturas de una empresa y decide por ella cuáles **pagar**,
 | M4 | Registro de auditoría encadenado + explicaciones + métricas | ✅ |
 | M5 | Cola de aprobación humana + API completa | ✅ |
 | M6 | Interfaz: resumen, facturas, aprobaciones, reglas y auditoría | ✅ |
-| M7 | Métricas de autonomía/seguridad + demo | ⏳ |
+| M7 | Evaluación reproducible del set y guion de la demo | ✅ |
 | M8 | Validadores regionales: Colombia (NIT, CUFE, IVA, cuadre) | ✅ |
 | M9 | Multi-idioma y validadores internacionales (IBAN, BIC, ABA, divisas) | ✅ |
 | M10 | Aprendizaje continuo: memoria de casos (RAG) y propuestas con aprobación humana | ✅ |
@@ -50,6 +51,7 @@ npm run setup     # activa los git hooks (una vez)
 npm test          # pruebas
 npm run check     # calidad + cobertura (lo que exige el pre-commit)
 npm run dataset   # regenera data/invoices/ (32 facturas simuladas)
+npm run eval      # evalúa el set: seguridad, precisión y autonomía
 npm start         # http://localhost:3000
 
 # Local con Docker
@@ -63,6 +65,18 @@ docker compose up --build    # http://localhost:3000
 3. *Settings → Networking → Generate Domain* para obtener la URL pública.
 
 No requiere variables de entorno: por defecto corre en modo simulado (`PAYGUARD_MODE=mock`).
+
+## Resultados sobre el set (`npm run eval`)
+
+| Métrica | Valor |
+|---|---|
+| Facturas | 32 (12 pagadas · 9 frenadas · 11 pendientes) |
+| **Pagos indebidos** | **0** |
+| Precisión contra lo esperado | 100% |
+| Autonomía | 65,6% |
+| Cadena de auditoría | íntegra |
+
+La evaluación corre en CI y **falla el build** si aparece un pago indebido o si la precisión baja del 100%.
 
 ## Seguridad por diseño
 

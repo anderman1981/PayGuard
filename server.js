@@ -93,6 +93,7 @@ async function route(req, url) {
   if (p === '/api/proposals') return api.getProposals(state);
   if (p === '/api/metrics') return api.getMetrics(state, []);
   if (p.startsWith('/api/')) return { status: 404, body: { error: 'no encontrado' } };
+  if (p === '/api/upload' && method === 'POST') return api.postUpload(state, await readBody(req), lang, ctx);
   return null;
 }
 
