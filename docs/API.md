@@ -59,3 +59,36 @@ mueve dinero: solo notifica. Apagado salvo `PAYGUARD_ALLOW_NOTIFY=1`. Cuerpo:
   pendiente de proveedor.
 
 Cada reenvío queda registrado en la auditoría con tipo `notify`.
+
+## Corrida diaria — `GET` y `POST /api/daily-run`
+
+La "corrida diaria" revisa qué facturas **tienen pago para hoy** (vencen hoy o
+antes, es decir, vencidas y aún pendientes) y las pasa por el motor existente.
+**Nunca mueve dinero**: solo decide, registra y explica. La lógica vive en
+`src/daily/daily-run.js` (`selectDueInvoices`, `runDailyRun`, `loadDataset`,
+`nextDailyRunMs`) y los handlers en `src/api/handlers.js`
+(`getDailyRun`, `postDailyRun`); la vista en vivo es `public/corrida.js`.
+
+- `GET /api/daily-run` — vista previa: lista las facturas con pago para hoy, sin
+  procesarlas. Admite `?date=YYYY-MM-DD` para fijar otra fecha de referencia.
+  Respuesta: `{ date, invoices: [{ id, counterpartyName, amount, currency, dueDate }] }`.
+- `POST /api/daily-run` — corre la selección por el motor y devuelve
+  `{ date, count, decisions: [...] }` (cada decisión con `outcome`, `summary`,
+  `failed` y `explanation`). El cuerpo es opcional: `{ "date"?, "invoices"? }`.
+  Si no se pasan `invoices`, usa el set de ejemplo del servidor.
+
+## Eventos en vivo — `GET /api/events`
+
+Flujo **Server-Sent Events** (`text/event-stream`, sin dependencias) para pintar
+la corrida en tiempo real. Emite, por factura, `evaluating` (empieza a
+evaluarla) y `decided` (`{ invoiceId, outcome, summary, failed, explanation }`),
+y en el disparador automático, `run-start` y `run-done`.
+
+## Disparador 07:00 (opcional)
+
+Con `PAYGUARD_DAILY=1`, el servidor programa la corrida diaria a las **07:00** de
+la zona horaria de `PAYGUARD_TZ` (o `TZ`, por defecto `UTC`) usando `setTimeout`
+nativo (cero dependencias) y se reprograma cada día. `PAYGUARD_DAILY_STEP_MS`
+ajusta la pausa entre facturas (visualización; `0` la apaga). Apagado por
+defecto y en pruebas. **En producción esto lo haría un cron real** del sistema o
+del orquestador; el disparador propio es para la demo.
