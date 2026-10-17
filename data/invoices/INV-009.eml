@@ -1,0 +1,17 @@
+From: facturacion@cloudforgellc.example
+To: pagos@andeslabs.example
+Subject: INVOICE CF-78002
+Date: 2026-10-04
+Content-Type: text/plain; charset=utf-8
+
+INVOICE CF-78002
+
+Vendor: CloudForge LLC
+Tax ID: US-87-1234567
+Date: 2026-10-04    Due: 2026-10-24
+Contract: CT-2026-005
+
+Description: Object storage overage
+Amount due: 4,700 USD
+Account: ****0042
+ROUTING: 111000025

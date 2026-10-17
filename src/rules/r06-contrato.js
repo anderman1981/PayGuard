@@ -19,8 +19,10 @@ export const r06 = {
         evidence: { contractId: contract.id, expected: contract.currency, got: inv.currency },
       };
     }
+    // Sin monto legible no hay nada que comparar: R01 ya escala el caso.
+    if (typeof inv.amount !== 'number') return PASS;
     const limit = contract.amount * (1 + contract.tolerancePct / 100);
-    if (typeof inv.amount !== 'number' || inv.amount > limit) {
+    if (inv.amount > limit) {
       return {
         verdict: 'HOLD',
         messageKey: 'r06.amount',

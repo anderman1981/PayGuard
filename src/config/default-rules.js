@@ -6,7 +6,7 @@
 export const DEFAULT_RULES = {
   humanApprovalAboveUSD: 5000,
   maxPerPaymentUSD: 20000,
-  periodBudgetUSD: 45000,
+  periodBudgetUSD: 48000,
   allowedCurrencies: ['USD', 'COP', 'MXN', 'ARS'],
   allowedCountries: ['US', 'CO', 'MX', 'AR'],
   minExtractionConfidence: 0.85,

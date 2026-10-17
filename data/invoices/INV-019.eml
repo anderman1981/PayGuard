@@ -1,0 +1,16 @@
+From: facturacion@datapampasrl.example
+To: pagos@andeslabs.example
+Subject: FACTURE DP-5103
+Date: 2026-10-12
+Content-Type: text/plain; charset=utf-8
+
+FACTURE DP-5103
+
+Fournisseur: DataPampa S.R.L.
+Numero fiscal: 30-71234567-8
+Date: 2026-10-12    Echeance: 2026-11-01
+Contrat: CT-2026-004
+
+Description: Analitica facturada en euros
+Net a payer: 2,800 EUR
+Compte: ****7730

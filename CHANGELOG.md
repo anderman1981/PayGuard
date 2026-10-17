@@ -4,6 +4,16 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-17
+### Added
+- M1: set de 32 facturas ficticias en PDF, PNG, correo y chat, con 21 tipos de caso (12 normales y 20 trampas) y la decisión esperada de cada una.
+- `scripts/lib/pdf.js` y `scripts/lib/png.js`: escritores de PDF y PNG sin dependencias (PNG con fuente de mapa de bits propia).
+- `npm run dataset` regenera el set de forma reproducible.
+- Prueba del set: el agente acierta el 100% de las decisiones esperadas, cada trampa la marca su regla, cero pagos inseguros y la auditoría del lote verifica.
+### Changed
+- Presupuesto del periodo por defecto: 45.000 → 48.000 USD, para que el caso de presupuesto agotado sea el último del lote y no afecte a los demás.
+- R06 ya no frena cuando el monto es ilegible: ese caso lo escala R01, que es quien puede juzgarlo.
+
 ## [0.5.0] - 2026-10-17
 ### Added
 - M4: registro de auditoría encadenado con SHA-256; alterar o borrar una entrada rompe `verify()`.

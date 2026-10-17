@@ -1,0 +1,17 @@
+From: facturacion@nubeaztecasadecv.example
+To: pagos@andeslabs.example
+Subject: FATURA NA-9005
+Date: 2026-10-15
+Content-Type: text/plain; charset=utf-8
+
+FATURA NA-9005
+
+Fornecedor: Nube Azteca S.A. de C.V.
+CNPJ/ID: NAZ190305AB1
+Data: 2026-10-15    Vencimento: 2026-11-04
+Contrato: CT-2026-003
+
+Descricao: Transferencia internacional
+Valor total: 36,000 MXN
+Conta: ****1209
+BIC: DEUT1EFF

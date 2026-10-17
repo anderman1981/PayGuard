@@ -1,0 +1,17 @@
+From: facturacion@cloudforgellc.example
+To: pagos@andeslabs.example
+Subject: INVOICE CF-78010
+Date: 2026-10-15
+Content-Type: text/plain; charset=utf-8
+
+INVOICE CF-78010
+
+Vendor: CloudForge LLC
+Tax ID: US-87-1234567
+Date: 2026-10-15    Due: 2026-11-04
+Contract: CT-2026-005
+
+Description: Final October usage
+Amount due: 4,900 USD
+Account: ****0042
+ROUTING: 111000025
