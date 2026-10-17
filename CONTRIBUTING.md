@@ -52,7 +52,7 @@ Formato obligatorio (lo valida el hook `commit-msg`):
 <tipo>(<alcance>): <descripción en minúscula, imperativo, máx. 72 caracteres>
 ```
 
-Tipos: `fea`, `fix`, `major`, `docs`, `test`, `refactor`, `chore`, `perf`, `security`, `release`.
+Tipos: `fea`, `fix`, `major`, `docs`, `test`, `refactor`, `chore`, `perf`, `security`, `release`, `merge`.
 Ejemplo: `fea(rules): agregar R10 presupuesto del periodo`.
 
 ## 4. Pull requests

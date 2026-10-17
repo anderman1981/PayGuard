@@ -4,7 +4,7 @@ msg=$(head -1 "$1")
 case "$msg" in
   "Merge "*|"Revert "*) exit 0 ;;
 esac
-if ! printf '%s' "$msg" | grep -Eq '^(fea|fix|major|docs|test|refactor|chore|perf|security|release)\([a-z0-9._-]+\): .{1,72}$'; then
+if ! printf '%s' "$msg" | grep -Eq '^(fea|fix|major|docs|test|refactor|chore|perf|security|release|merge)\([a-z0-9._-]+\): .{1,72}$'; then
   echo "✗ Mensaje inválido: $msg"
   echo "  Formato: tipo(alcance): descripción   ej. fea(rules): agregar R10 presupuesto"
   echo "  Tipos: fea fix major docs test refactor chore perf security release"
