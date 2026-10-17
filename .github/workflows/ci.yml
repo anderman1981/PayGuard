@@ -43,7 +43,8 @@ jobs:
         run: npm run quality
       - name: Pruebas con cobertura
         run: npm run coverage
-      - name: Tipos
+      - name: Tipos (TS completo, informativo — el gate real es el ts-check de quality.js)
+        continue-on-error: true
         run: npm run typecheck
       - name: Versión de la rama
         if: startsWith(github.head_ref || github.ref_name, 'fea/') || startsWith(github.head_ref || github.ref_name, 'fix/')
