@@ -98,6 +98,21 @@ La cadena de auditoría completa (todas las decisiones con hash encadenado) est�
 > Sustituye `<URL_RAILWAY>` por la URL generada en Railway → *Settings → Networking → Domain*.
 > La interfaz visual de auditoría está en la pestaña **Auditoría** de la app.
 
+## Notificaciones en tiempo real (Slack)
+
+Los jueces y evaluadores pueden unirse al workspace de Slack del proyecto para recibir las alertas del agente en tiempo real (facturas frenadas, escaladas, aprobaciones humanas):
+
+👉 **[Unirse al workspace PayGuard en Slack](https://join.slack.com/t/hackathon30x/shared_invite/zt-4dchf24dj-~3cNyZEimfSQ803JrLadyA)**
+
+Cada vez que el agente frena o escala una factura, publica un aviso en el canal `#alertas-agente` con el ID de la factura, el motivo y las reglas que lo activaron.
+
+Para activar las notificaciones en tu propia instancia de Railway, agrega las variables:
+
+```
+PAYGUARD_ALLOW_NOTIFY=1
+PAYGUARD_SLACK_WEBHOOK=https://hooks.slack.com/services/...
+```
+
 ## Licencia
 
 MIT
