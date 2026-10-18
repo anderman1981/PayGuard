@@ -19,6 +19,7 @@ import { money, buildManualInvoice, parseInvoicesJson, MANUAL_FIELDS, TONE } fro
  */
 
 const MAX_UPLOAD_BYTES = 800_000;
+const SET_PAGE = 15;
 
 /** @param {IngestaCtx} ctx @returns {HTMLElement} */
 export function viewIngesta(ctx) {
@@ -84,6 +85,44 @@ function paintResult(ctx, box, decisions) {
   }
 }
 
+/**
+ * Muestra los datos extraídos del archivo subido y la decisión del agente.
+ * @param {IngestaCtx} ctx @param {HTMLElement} box @param {any} r
+ */
+function paintUploadResult(ctx, box, r) {
+  const { el, state } = ctx;
+  box.textContent = '';
+  const inv = r.invoice ?? {};
+  const d = r.decision ?? {};
+  const outcome = d.outcome ?? '';
+  const label = String(d.summary ?? '').split(' · ')[0] || outcome;
+  const amt = inv.amount != null
+    ? money(/** @type {number} */ (inv.amount), String(inv.currency ?? 'USD'), state.lang)
+    : '—';
+  const fields = /** @type {[string, unknown][]} */ ([
+    ['Beneficiario', inv.counterpartyName],
+    ['Monto', amt],
+    ['Emisión', inv.issueDate],
+    ['Vencimiento', inv.dueDate],
+    ['Nº factura', inv.invoiceNumber],
+    ['Contrato', inv.contractId],
+    ['Proveedor IA', r.provider],
+  ]).filter((row) => row[1] != null && row[1] !== '');
+  box.append(el('div', { class: 'rule' }, [
+    el('header', {}, [
+      el('span', { class: 'mono', text: String(inv.id ?? d.invoiceId ?? '—') }),
+      el('span', { class: 'grow' }),
+      el('span', { class: `pill ${TONE[outcome] ?? 'wait'}`, text: label }),
+    ]),
+    el('table', {}, [
+      el('tbody', {}, fields.map((row) =>
+        el('tr', {}, [el('td', { class: 'muted', text: String(row[0]) }), el('td', { text: String(row[1]) })])
+      )),
+    ]),
+    el('p', { text: String(r.explanation ?? '') }),
+  ]));
+}
+
 /** POST a /api/run y pinta. @param {IngestaCtx} ctx @param {HTMLElement} box @param {Record<string,unknown>[]} invoices */
 async function evaluate(ctx, box, invoices) {
   const { api, setNotice, refresh } = ctx;
@@ -144,7 +183,7 @@ function sectionUpload(ctx, box) {
   const { el, state, api, setNotice, refresh } = ctx;
   const head = [
     el('h2', { text: 'Subir un archivo' }),
-    el('p', { class: 'muted', text: 'PDF, imagen o texto. El agente extrae los datos y decide.' }),
+    el('p', { class: 'muted', text: 'PDF, imagen o texto. El agente extrae los datos, los muestra y decide.' }),
   ];
   if (!state.uploadEnabled) {
     return el('div', { class: 'stack' }, [
@@ -164,7 +203,10 @@ function sectionUpload(ctx, box) {
         method: 'POST',
         body: JSON.stringify({ file: { name: f.name, mime: f.type || 'application/octet-stream', bytes } }),
       });
-      paintResult(ctx, box, [r.decision ? { ...r.decision, explanation: r.explanation } : r]);
+      paintUploadResult(ctx, box, r);
+      if (r.invoice?.id && !state.invoices.some((i) => i.id === r.invoice.id)) {
+        state.invoices.unshift({ id: r.invoice.id, extraction: r.invoice });
+      }
       await refresh();
       setNotice(`Archivo procesado por "${r.provider}".`, 'ok');
     } catch (err) {
@@ -178,29 +220,72 @@ function sectionUpload(ctx, box) {
 /** @param {IngestaCtx} ctx */
 function sectionSet(ctx) {
   const { el, state } = ctx;
+  const total = state.invoices.length;
+  const pages = Math.max(1, Math.ceil(total / SET_PAGE));
+  let page = 0;
+
   const byId = new Map(state.decisions.map((d) => [d.invoiceId, d]));
-  const rows = state.invoices.map((i) => {
-    const d = byId.get(i.id);
-    const pill = d
-      ? el('span', { class: `pill ${TONE[d.outcome] ?? 'wait'}`, text: String(d.summary ?? '').split(' · ')[0] || d.outcome })
-      : el('span', { class: 'pill', text: 'Sin procesar' });
-    return el('tr', {}, [
-      el('td', {}, [el('span', { class: 'mono', text: i.id })]),
-      el('td', { text: String(i.extraction?.counterpartyName ?? '—') }),
-      el('td', {}, [pill]),
-    ]);
-  });
+  const tbody = el('tbody');
+
+  function renderPage() {
+    const start = page * SET_PAGE;
+    const slice = state.invoices.slice(start, start + SET_PAGE);
+    tbody.textContent = '';
+    for (const i of slice) {
+      const d = byId.get(i.id);
+      const pill = d
+        ? el('span', { class: `pill ${TONE[d.outcome] ?? 'wait'}`, text: String(d.summary ?? '').split(' · ')[0] || d.outcome })
+        : el('span', { class: 'pill', text: 'Sin procesar' });
+      tbody.append(el('tr', {}, [
+        el('td', {}, [el('span', { class: 'mono', text: i.id })]),
+        el('td', { text: String(i.extraction?.counterpartyName ?? '—') }),
+        el('td', {}, [pill]),
+      ]));
+    }
+    if (!slice.length) {
+      tbody.append(el('tr', {}, [el('td', { colspan: '3', class: 'muted', text: 'Sin set cargado.' })]));
+    }
+  }
+
+  renderPage();
+
   const setResult = el('div', { id: 'set-result' });
   const cargar = el('button', { class: 'btn ghost', type: 'button', text: 'Cargar y procesar el set' });
   cargar.addEventListener('click', () => evaluate(ctx, setResult, state.invoices.map((i) => i.extraction)));
+
+  const countLabel = el('span', { class: 'muted', text: `${total} factura(s)` });
+  const prevBtn = el('button', { class: 'btn ghost', type: 'button', text: '← Ant.' });
+  const nextBtn = el('button', { class: 'btn ghost', type: 'button', text: 'Sig. →' });
+  prevBtn.toggleAttribute('disabled', true);
+  nextBtn.toggleAttribute('disabled', pages <= 1);
+  prevBtn.addEventListener('click', () => {
+    page = Math.max(0, page - 1);
+    renderPage();
+    countLabel.textContent = `${page * SET_PAGE + 1}–${Math.min((page + 1) * SET_PAGE, total)} de ${total}`;
+    prevBtn.toggleAttribute('disabled', page === 0);
+    nextBtn.toggleAttribute('disabled', page >= pages - 1);
+  });
+  nextBtn.addEventListener('click', () => {
+    page = Math.min(pages - 1, page + 1);
+    renderPage();
+    countLabel.textContent = `${page * SET_PAGE + 1}–${Math.min((page + 1) * SET_PAGE, total)} de ${total}`;
+    prevBtn.toggleAttribute('disabled', page === 0);
+    nextBtn.toggleAttribute('disabled', page >= pages - 1);
+  });
+
+  const pagerBar = pages > 1
+    ? el('div', { class: 'topbar' }, [prevBtn, countLabel, nextBtn])
+    : el('div', {}, [countLabel]);
+
   return el('div', { class: 'stack' }, [
     el('h2', { text: 'Facturas del set de ejemplo' }),
-    el('p', { class: 'muted', text: `${state.invoices.length} facturas simuladas para probar el agente.` }),
+    el('p', { class: 'muted', text: 'Facturas simuladas para probar el agente. Las subidas aparecen al inicio.' }),
     el('div', {}, [cargar]),
     el('table', {}, [
       el('thead', {}, [el('tr', {}, ['Factura', 'Beneficiario', 'Estado'].map((h) => el('th', { text: h })))]),
-      el('tbody', {}, rows.length ? rows : [el('tr', {}, [el('td', { colspan: '3', class: 'muted', text: 'Sin set cargado.' })])]),
+      tbody,
     ]),
+    pagerBar,
     setResult,
   ]);
 }
