@@ -112,6 +112,9 @@ export function viewAuditoria(ctx) {
   ]);
   queueMicrotask(() => paintAudit(ctx));
   return el('div', { class: 'stack' }, [
+    el('p', { class: 'muted', text: 'Registro inmutable de cada acción del sistema: decisiones del agente, '
+      + 'aprobaciones humanas, cambios de reglas y configuración. Cada entrada encadena el hash de la anterior '
+      + '— el botón "Verificar integridad" detecta cualquier alteración.' }),
     el('div', { class: 'topbar' }, [check, typeSelect]),
     table,
     pager,
