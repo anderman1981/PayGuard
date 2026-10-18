@@ -42,29 +42,32 @@ background:var(--card,#fff);}
 .pg-progress{height:4px;background:var(--muted-bg,#e2e8f0);}
 .pg-fill{height:100%;width:0%;background:linear-gradient(90deg,#667eea,#764ba2);
 transition:width .1s linear;}
-.pg-frame{position:relative;padding-bottom:56.25%;overflow:hidden;
+.pg-frame{position:relative;height:160px;overflow:hidden;
 background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);}
 .pg-slide{position:absolute;inset:0;display:flex;flex-direction:column;
-justify-content:center;align-items:center;text-align:center;padding:32px;
+justify-content:center;align-items:center;text-align:center;padding:16px 24px;
 opacity:0;transition:opacity .7s;color:#fff;}
 .pg-slide.pg-active{opacity:1;}
-.pg-badge{font-size:.78rem;background:rgba(255,255,255,.18);padding:5px 12px;
-border-radius:16px;margin-bottom:12px;letter-spacing:.05em;}
-.pg-slide h2{font-size:clamp(1.4rem,4vw,2.4rem);margin:0 0 12px;
+.pg-badge{font-size:.7rem;background:rgba(255,255,255,.18);padding:3px 10px;
+border-radius:12px;margin-bottom:8px;letter-spacing:.05em;}
+.pg-slide h2{font-size:clamp(1rem,3vw,1.4rem);margin:0 0 6px;
 text-shadow:1px 2px 4px rgba(0,0,0,.25);}
-.pg-slide p{font-size:clamp(.9rem,2vw,1.15rem);line-height:1.6;max-width:640px;
+.pg-slide p{font-size:clamp(.78rem,1.8vw,.95rem);line-height:1.5;max-width:460px;
 text-shadow:1px 1px 3px rgba(0,0,0,.2);}
-.pg-controls{display:flex;align-items:center;justify-content:center;gap:16px;
-padding:16px 20px;background:var(--card,#fff);flex-wrap:wrap;}
-.pg-controls button{background:#667eea;color:#fff;border:none;border-radius:8px;
-padding:8px 18px;cursor:pointer;font-size:.9rem;transition:background .2s;}
+.pg-controls{display:flex;align-items:center;justify-content:center;gap:10px;
+padding:8px 12px;background:var(--card,#fff);flex-wrap:wrap;}
+.pg-controls button{background:#667eea;color:#fff;border:none;border-radius:6px;
+padding:5px 12px;cursor:pointer;font-size:.8rem;transition:background .2s;}
 .pg-controls button:hover{background:#764ba2;}
-.pg-timer{font-weight:600;color:#667eea;font-size:.9rem;min-width:56px;text-align:center;}
-.pg-dots{display:flex;justify-content:center;gap:8px;padding:12px;
+.pg-timer{font-weight:600;color:#667eea;font-size:.8rem;min-width:48px;text-align:center;}
+.pg-dots{display:flex;justify-content:center;gap:6px;padding:6px;
 background:var(--card,#fff);}
-.pg-dot{width:10px;height:10px;border-radius:50%;background:var(--muted-bg,#e2e8f0);
+.pg-dot{width:8px;height:8px;border-radius:50%;background:var(--muted-bg,#e2e8f0);
 cursor:pointer;transition:background .2s;}
 .pg-dot.pg-active{background:#667eea;}
+.resumen-bottom{display:grid;grid-template-columns:minmax(260px,460px) 1fr;
+gap:20px;align-items:start;}
+@media(max-width:720px){.resumen-bottom{grid-template-columns:1fr;}}
 @media(prefers-color-scheme:dark){
   .pg-player{border-color:#334155;}
   .pg-progress,.pg-dot{background:#334155;}
@@ -144,7 +147,7 @@ export function buildVideoSection() {
 
   const frame = mkEl('div', { class: 'pg-frame' }, slideEls);
   const section = mkEl('div', { class: 'stack' }, [
-    mkEl('h2', { text: 'Demo PayGuard — 2 minutos' }),
+    mkEl('h3', { text: 'Demo — 2 min' }),
     mkEl('div', { class: 'pg-player' }, [
       mkEl('div', { class: 'pg-progress' }, [fill]),
       frame,

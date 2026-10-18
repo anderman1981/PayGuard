@@ -71,7 +71,7 @@ Hackathon Blinka 30X · PayGuard · Anderson Martinez Restrepo
 **PANTALLA:** dashboard Admin con métricas finales. Texto en pantalla: **"La IA lee — el código decide."**
 
 **NARRACIÓN:**
-> PayGuard corre con cero dependencias de producción. Solo Node.js nativo. 177 pruebas. Cobertura del 97%. Cero pagos indebidos. La IA lee. El código decide.
+> PayGuard corre con cero dependencias de producción. Solo Node.js nativo. 180 pruebas. Cobertura del 97%. Cero pagos indebidos. La IA lee. El código decide.
 
 ---
 
@@ -87,7 +87,7 @@ Cada día a las 7 AM el agente procesa todas las facturas que vencen ese día. L
 
 Cada decisión queda en una cadena de integridad verificable: el hash de cada registro incluye el hash del anterior. Y cualquier sistema ERP puede conectarse via API Key con el rol que necesite.
 
-PayGuard corre con cero dependencias de producción. Solo Node.js nativo. 177 pruebas. Cobertura del 97%. Cero pagos indebidos. La IA lee. El código decide.
+PayGuard corre con cero dependencias de producción. Solo Node.js nativo. 180 pruebas. Cobertura del 97%. Cero pagos indebidos. La IA lee. El código decide.
 
 ---
 
