@@ -19,7 +19,7 @@ PayGuard revisa las facturas de una empresa y decide por ella cuáles **pagar**,
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Ramas, versionado, commits, gates |
 | [SECURITY.md](SECURITY.md) | Invariantes y políticas de seguridad |
 | [AGENTS.md](AGENTS.md) | Instrucciones para los agentes de IA |
-| [docs/DEMO.md](docs/DEMO.md) | Guion del video de demostración |
+| [docs/DEMO.md](docs/DEMO.md) | Guion del video de demostración (3 min) |
 | [docs/DOC-RULE.md](docs/DOC-RULE.md) | Regla de documentación viva (obligatoria en cada interacción) |
 | [docs/BITACORA.md](docs/BITACORA.md) | Qué dejó hecho cada sesión |
 | [docs/adr/](docs/adr/) | Decisiones de arquitectura |
@@ -29,12 +29,12 @@ PayGuard revisa las facturas de una empresa y decide por ella cuáles **pagar**,
 | Módulo | Qué hace | Estado |
 |---|---|---|
 | M0 | Dominio, reglas, guardia de solo lectura, servidor, Docker, gobierno y gates | ✅ |
-| M1 | 32 facturas ficticias (PDF, PNG, correo, chat) con decisión esperada | ✅ |
+| M1 | 47 facturas ficticias (PDF, PNG, correo, chat) con decisión esperada | ✅ |
 | M2 | Extracción con cadena de LLMs, validación estricta y caché sin conexión | ✅ |
-| M3 | Motor de reglas R01–R12 + política + pruebas de propiedades | ✅ |
+| M3 | Motor de reglas R01–R13 + política + pruebas de propiedades | ✅ |
 | M4 | Registro de auditoría encadenado + explicaciones + métricas | ✅ |
 | M5 | Cola de aprobación humana + API completa | ✅ |
-| M6 | Interfaz: resumen, facturas, aprobaciones, reglas y auditoría | ✅ |
+| M6 | Interfaz: login demo, dashboard, facturas, corrida diaria, API Keys, Swagger y auditoría | ✅ |
 | M7 | Evaluación reproducible del set y guion de la demo | ✅ |
 | M8 | Validadores regionales: Colombia (NIT, CUFE, IVA, cuadre) | ✅ |
 | M9 | Multi-idioma y validadores internacionales (IBAN, BIC, ABA, divisas) | ✅ |
@@ -50,7 +50,7 @@ npm run setup     # activa los git hooks (una vez)
 # Local con Node 20+
 npm test          # pruebas
 npm run check     # calidad + cobertura (lo que exige el pre-commit)
-npm run dataset   # regenera data/invoices/ (32 facturas simuladas)
+npm run dataset   # regenera data/invoices/ (47 facturas simuladas)
 npm run eval      # evalúa el set: seguridad, precisión y autonomía
 npm start         # http://localhost:3000
 
@@ -70,11 +70,14 @@ No requiere variables de entorno: por defecto corre en modo simulado (`PAYGUARD_
 
 | Métrica | Valor |
 |---|---|
-| Facturas | 32 (12 pagadas · 9 frenadas · 11 pendientes) |
+| Facturas | 47 (27 pagadas · 9 frenadas · 11 escaladas) |
 | **Pagos indebidos** | **0** |
 | Precisión contra lo esperado | 100% |
-| Autonomía | 65,6% |
+| Autonomía | **76,6 %** — 36/47 resueltas sin intervención humana |
+| Requieren humano (ESCALATE) | 23,4 % — 11/47 |
 | Cadena de auditoría | íntegra |
+
+> **Lectura honesta de la autonomía:** el 76,6 % significa que en 36 de las 47 facturas el agente decidió solo (PAY o HOLD). Las 11 restantes se escalan porque alguna regla no puede resolverse sin contexto humano (contrato dudoso, beneficiario nuevo, monto límite). Subir la autonomía requiere ampliar la base de contratos y beneficiarios conocidos — no relajar las reglas.
 
 La evaluación corre en CI y **falla el build** si aparece un pago indebido o si la precisión baja del 100%.
 
@@ -82,6 +85,18 @@ La evaluación corre en CI y **falla el build** si aparece un pago indebido o si
 
 - `src/integrations/blinka/readonly-guard.js`: solo permite GET/HEAD, bloquea rutas de pagos/transferencias y rechaza claves de producción (`*_live_*`).
 - Todos los datos son ficticios (`data/company.json`).
+
+## Auditoría del sistema
+
+La cadena de auditoría completa (todas las decisiones con hash encadenado) está disponible en la instancia de producción:
+
+```
+<URL_RAILWAY>/api/audit          # JSON con todas las entradas
+<URL_RAILWAY>/api/audit/verify   # verifica la integridad de la cadena
+```
+
+> Sustituye `<URL_RAILWAY>` por la URL generada en Railway → *Settings → Networking → Domain*.
+> La interfaz visual de auditoría está en la pestaña **Auditoría** de la app.
 
 ## Licencia
 
