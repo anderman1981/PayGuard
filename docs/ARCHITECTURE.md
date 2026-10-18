@@ -152,7 +152,9 @@ porque cada resultado guarda su clave de mensaje. `src/metrics.js` calcula auton
 precisión y pagos inseguros. `src/approvals/queue.js` implementa la cola humana.
 `src/api/state.js` guarda el estado de la demo y `src/api/handlers.js` los manejadores
 de la API, puros respecto al transporte; `server.js` solo enruta y pone las cabeceras
-de seguridad.
+de seguridad. `src/api/autonomy.js` define los perfiles de autonomía (`AUTONOMY_PROFILES`,
+`NOTE_99PCT`) y sus handlers (`getAutonomyProfile`, `putAutonomyProfile`); `handlers.js`
+re-exporta estos símbolos para que el servidor y las pruebas importen desde un solo lugar.
 
 ### Implementación de M1
 
