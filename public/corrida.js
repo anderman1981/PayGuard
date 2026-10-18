@@ -78,6 +78,7 @@ async function loadToday(api) {
  */
 async function runNow(api, state, setNotice) {
   if (running) return;
+  rows.clear();
   running = true;
   if (repaint) repaint();
   try {
@@ -157,6 +158,7 @@ function rowNode({ el, lang, onOpen }, row) {
  */
 export function viewCorrida(ctx) {
   corridaPage = 0;
+  rows.clear();
   const { el, api, state, setNotice } = ctx;
   const onOpen = ctx.openDrawer ?? null;
   notify = ctx.notify ?? null;
@@ -170,6 +172,7 @@ export function viewCorrida(ctx) {
 
   demoBtn.addEventListener('click', async () => {
     if (running) return;
+    rows.clear();
     running = true;
     if (repaint) repaint();
     try {
