@@ -11,16 +11,28 @@ import { createNotifier } from './notify.js';
 import { viewAuditoria } from './auditoria.js';
 import { viewApiDocs } from './apidocs.js';
 import { viewFacturas } from './facturas.js';
+import { viewDeveloper } from './developer.js';
+import { mountLogin } from './login.js';
 
 /** @type {ReturnType<typeof createNotifier>|null} */
 let notifier = null;
+/** @type {import('./login.js').Profile} */
+let profile = 'admin';
 
-
-const VIEWS = [
+/** Vistas visibles por perfil. Admin ve todo. */
+const ALL_VIEWS = /** @type {const} */ ([
   ['resumen', 'Resumen'], ['corrida', 'Hoy'], ['ingesta', 'Ingesta'], ['facturas', 'Facturas'],
   ['aprobaciones', 'Aprobaciones'], ['reglas', 'Reglas'], ['auditoria', 'Auditoría'],
-  ['apidocs', 'API Docs'],
-];
+  ['apidocs', 'API Docs'], ['developer', 'Desarrollador'],
+]);
+const VIEWS_BY_PROFILE = /** @type {Record<import('./login.js').Profile, ReadonlyArray<readonly [string, string]>>} */ ({
+  admin: ALL_VIEWS.filter(([id]) => id !== 'developer'),
+  facturador: [
+    ['corrida', 'Hoy'], ['ingesta', 'Ingesta'], ['facturas', 'Facturas'],
+    ['aprobaciones', 'Aprobaciones'], ['apidocs', 'API Docs'],
+  ],
+  desarrollador: [['apidocs', 'API Docs'], ['developer', 'Desarrollador'], ['resumen', 'Resumen']],
+});
 
 const state = {
   view: 'resumen', lang: 'es', query: '', outcome: 'ALL', uploadEnabled: false,
@@ -236,20 +248,37 @@ async function refresh() {
 }
 
 function render() {
+  const views = VIEWS_BY_PROFILE[profile] ?? VIEWS_BY_PROFILE.admin;
   const nav = $('nav');
   nav.textContent = '';
-  for (const [id, label] of VIEWS) {
+
+  const profilePill = el('span', {
+    class: `pill ${profile === 'admin' ? 'stop' : profile === 'facturador' ? 'ok' : 'wait'}`,
+    style: 'margin-bottom: 6px; font-size:11px',
+    text: profile,
+  });
+  const switchBtn = el('button', { class: 'btn ghost', type: 'button', text: 'Cambiar perfil', style: 'font-size:11px; padding:4px 8px' });
+  switchBtn.addEventListener('click', () => {
+    mountLogin((p) => { profile = p; state.view = views[0]?.[0] ?? 'resumen'; render(); });
+  });
+  nav.append(el('div', {
+    style: 'padding: 0 4px 8px; display:flex; gap:6px; align-items:center; flex-wrap:wrap',
+  }, [profilePill, switchBtn]));
+
+  for (const [id, label] of views) {
     const b = el('button', { type: 'button', text: label });
     if (state.view === id) b.setAttribute('aria-current', 'page');
     b.addEventListener('click', () => { state.view = id; state.notice = null; render(); });
     nav.append(b);
   }
-  $('title').textContent = VIEWS.find(([id]) => id === state.view)?.[1] ?? 'PayGuard';
+  const currentView = views.find(([id]) => id === state.view) ?? views[0];
+  if (!views.some(([id]) => id === state.view)) state.view = views[0]?.[0] ?? 'resumen';
+  $('title').textContent = currentView?.[1] ?? 'PayGuard';
 
   const view = $('view');
   view.textContent = '';
   if (state.notice) view.append(el('div', { class: `notice ${state.notice.tone}`, text: state.notice.text }));
-  const builders = {
+  const builders = /** @type {Record<string, () => HTMLElement>} */ ({
     resumen: viewResumen,
     corrida: () => viewCorrida({
       el, api, state, setNotice, notify: (d) => notifier && notifier.sync(d), openDrawer,
@@ -259,9 +288,10 @@ function render() {
     aprobaciones: viewAprobaciones,
     reglas: viewReglas,
     auditoria: () => viewAuditoria({ el, api, state, setNotice, openDrawer }),
-    apidocs: () => viewApiDocs({ el }),
-  };
-  view.append(builders[state.view]());
+    apidocs: () => viewApiDocs({ el, api }),
+    developer: () => viewDeveloper({ el, api, setNotice }),
+  });
+  view.append((builders[state.view] ?? builders.resumen)());
 }
 
 async function start() {
@@ -308,6 +338,7 @@ async function start() {
   });
 
   await refresh();
+  mountLogin((p) => { profile = p; state.view = (VIEWS_BY_PROFILE[p] ?? VIEWS_BY_PROFILE.admin)[0]?.[0] ?? 'resumen'; render(); });
 }
 
 start();
