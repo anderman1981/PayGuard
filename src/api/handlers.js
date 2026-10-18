@@ -151,15 +151,88 @@ export async function postNotify(state, input, deps = {}) {
     return { status: 200, body: { slack: 'desactivado', email: 'desactivado' } };
   }
   const result = { slack: 'sin configurar', email: 'sin configurar' };
-  if (slackWebhook) {
-    result.slack = isSlackWebhook(slackWebhook) ? await postJson(fetchImpl, slackWebhook, { text }) : 'url no permitida';
+  const effectiveSlack = slackWebhook || state.notifyConfig.slackWebhook || env.PAYGUARD_SLACK_WEBHOOK;
+  const effectiveEmail = email || state.notifyConfig.email || env.PAYGUARD_NOTIFY_EMAIL;
+  if (effectiveSlack) {
+    result.slack = isSlackWebhook(effectiveSlack)
+      ? await postJson(fetchImpl, effectiveSlack, { text })
+      : 'url no permitida';
   }
-  if (email) {
+  if (effectiveEmail) {
     const hook = env.PAYGUARD_EMAIL_WEBHOOK;
-    result.email = hook ? await postJson(fetchImpl, hook, { to: email, text }) : 'requiere proveedor (PAYGUARD_EMAIL_WEBHOOK)';
+    result.email = hook
+      ? await postJson(fetchImpl, hook, { to: effectiveEmail, text })
+      : 'requiere proveedor (PAYGUARD_EMAIL_WEBHOOK)';
   }
   await state.audit.append({ type: 'notify', actor: 'agent', payload: { channels: result }, at: state.now });
   return { status: 200, body: result };
+}
+
+/** Devuelve la configuración actual de notificaciones (webhook y email guardados en el servidor).
+ * @param {AppState} state @returns {ApiResponse} */
+export const getNotifyConfig = (state) => ({
+  status: 200,
+  body: {
+    slackWebhook: state.notifyConfig.slackWebhook,
+    email: state.notifyConfig.email,
+    notifyEnabled: process.env.PAYGUARD_ALLOW_NOTIFY === '1',
+  },
+});
+
+/**
+ * Actualiza la configuración de notificaciones. Valida que el webhook sea de hooks.slack.com.
+ * @param {AppState} state
+ * @param {{ slackWebhook?: string, email?: string }} input
+ * @returns {Promise<ApiResponse>}
+ */
+export async function putNotifyConfig(state, input) {
+  const { slackWebhook: wh, email: em } = input;
+  if (wh !== undefined) {
+    if (wh && !isSlackWebhook(wh)) {
+      return { status: 400, body: { errors: ['slackWebhook debe ser de hooks.slack.com'] } };
+    }
+    state.notifyConfig.slackWebhook = wh;
+  }
+  if (em !== undefined) state.notifyConfig.email = em;
+  await state.audit.append({
+    type: 'notify-config', actor: 'admin',
+    payload: { slackSet: !!state.notifyConfig.slackWebhook, emailSet: !!state.notifyConfig.email },
+    at: state.now,
+  });
+  return { status: 200, body: { ok: true } };
+}
+
+/** Lista las API keys de demo (claves enmascaradas excepto los últimos 4 dígitos).
+ * @param {AppState} state @returns {ApiResponse} */
+export const getApiKeys = (state) => ({
+  status: 200,
+  body: [...state.apiKeys.values()].map((k) => ({
+    id: k.id, key: `${k.key.slice(0, 10)}…${k.key.slice(-4)}`, role: k.role, createdAt: k.createdAt,
+  })),
+});
+
+/** Crea una API key de demo. La clave completa solo se devuelve aquí.
+ * @param {AppState} state @param {{ role?: string }} input @returns {Promise<ApiResponse>} */
+export async function postApiKey(state, input) {
+  const { role } = input ?? {};
+  if (role !== 'read' && role !== 'write' && role !== 'admin') {
+    return { status: 400, body: { errors: ['role debe ser read, write o admin'] } };
+  }
+  const suffix = Math.random().toString(36).slice(2, 14) + Math.random().toString(36).slice(2, 14);
+  const key = `pg_${role}_${suffix}`;
+  const entry = { id: key, key, role, createdAt: state.now.toISOString() };
+  state.apiKeys.set(key, entry);
+  await state.audit.append({ type: 'apikey-created', actor: 'admin', payload: { role }, at: state.now });
+  return { status: 201, body: { key, role } };
+}
+
+/** Revoca una API key de demo.
+ * @param {AppState} state @param {string} key @returns {Promise<ApiResponse>} */
+export async function deleteApiKey(state, key) {
+  if (!state.apiKeys.has(key)) return { status: 404, body: { error: 'no encontrado' } };
+  state.apiKeys.delete(key);
+  await state.audit.append({ type: 'apikey-revoked', actor: 'admin', payload: { prefix: key.slice(0, 12) }, at: state.now });
+  return { status: 200, body: { ok: true } };
 }
 
 /** Fecha de referencia de "hoy": la del reloj del estado, salvo que se pida otra. */

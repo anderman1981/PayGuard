@@ -3,12 +3,14 @@
  * Notificación al humano, dentro del sidebar (debajo del menú): el agente le
  * escribe al responsable qué facturas NO va a pagar y por qué, de forma
  * llamativa. Suma sonido, un contador en la pestaña del navegador y, si se
- * configura, reenvío a Slack y correo vía /api/notify. Todo con textContent.
+ * configura, reenvío a Slack y correo vía /api/notify. La configuración se
+ * persiste en el servidor (/api/notify-config) para que sea compartida por
+ * todos los usuarios del sistema, no solo por el navegador actual.
+ * Todo con textContent.
  */
 import { deriveAgentMessages } from './lib.js';
 
 const STORE_SEEN = 'payguard.notify.seen';
-const STORE_CFG = 'payguard.notify.cfg';
 const BASE_TITLE = 'PayGuard';
 
 /** @param {string} tag @param {Record<string,string>} [attrs] @param {(Node|string)[]} [children] */
@@ -30,17 +32,6 @@ function readSeen() {
 /** @param {Set<string>} set */
 function writeSeen(set) {
   try { localStorage.setItem(STORE_SEEN, JSON.stringify([...set])); } catch { /* sin almacenamiento */ }
-}
-/** @returns {{ slackWebhook: string, email: string, audio: boolean }} */
-function readCfg() {
-  try {
-    const raw = JSON.parse(localStorage.getItem(STORE_CFG) ?? '{}');
-    return { slackWebhook: raw.slackWebhook ?? '', email: raw.email ?? '', audio: raw.audio !== false };
-  } catch { return { slackWebhook: '', email: '', audio: true }; }
-}
-/** @param {{ slackWebhook: string, email: string, audio: boolean }} cfg */
-function writeCfg(cfg) {
-  try { localStorage.setItem(STORE_CFG, JSON.stringify(cfg)); } catch { /* sin almacenamiento */ }
 }
 
 /** Un pitido corto, sin archivos de audio. */
@@ -71,7 +62,8 @@ function setTabBadge(n) {
  * @returns {{ mount: () => void, sync: (decisions: import('./lib.js').DecisionRow[]) => void }}
  */
 export function createNotifier(ctx) {
-  let cfg = readCfg();
+  /** audio pref vive en localStorage (es una preferencia personal, no de despliegue) */
+  let audioOn = (() => { try { return JSON.parse(localStorage.getItem('payguard.notify.audio') ?? 'true'); } catch { return true; } })();
   /** @type {{ id: string, outcome: string, kind: string, text: string }[]} */
   let messages = [];
 
@@ -80,24 +72,38 @@ export function createNotifier(ctx) {
   const cfgBox = el('div', { class: 'notify-cfg', hidden: 'true' });
 
   const slack = /** @type {HTMLInputElement} */ (el('input', {
-    id: 'cfg-slack', placeholder: 'https://hooks.slack.com/services/…', value: cfg.slackWebhook,
+    id: 'cfg-slack', placeholder: 'https://hooks.slack.com/services/…',
   }));
   const email = /** @type {HTMLInputElement} */ (el('input', {
-    id: 'cfg-email', type: 'email', placeholder: 'finanzas@empresa.com', value: cfg.email,
+    id: 'cfg-email', type: 'email', placeholder: 'finanzas@empresa.com',
   }));
   const audio = /** @type {HTMLInputElement} */ (el('input', { id: 'cfg-audio', type: 'checkbox' }));
-  audio.checked = cfg.audio;
+  audio.checked = audioOn;
+
+  const cfgStatus = el('span', { class: 'muted' });
+
   const saveCfg = el('button', { class: 'btn', type: 'button', text: 'Guardar' });
-  saveCfg.addEventListener('click', () => {
-    cfg = { slackWebhook: slack.value.trim(), email: email.value.trim(), audio: audio.checked };
-    writeCfg(cfg);
+  saveCfg.addEventListener('click', async () => {
+    audioOn = audio.checked;
+    try { localStorage.setItem('payguard.notify.audio', JSON.stringify(audioOn)); } catch { /* ok */ }
+    const wh = slack.value.trim();
+    const em = email.value.trim();
+    try {
+      await ctx.api('/notify-config', {
+        method: 'PUT',
+        body: JSON.stringify({ slackWebhook: wh, email: em }),
+      });
+      cfgStatus.textContent = '✓ Guardado';
+    } catch (err) {
+      cfgStatus.textContent = `Error: ${/** @type {Error} */ (err).message}`;
+    }
     cfgBox.setAttribute('hidden', 'true');
   });
   cfgBox.append(
     el('label', { for: 'cfg-slack' }, ['Canal de Slack (webhook)', slack]),
     el('label', { for: 'cfg-email' }, ['Correo de avisos', email]),
     el('label', { for: 'cfg-audio', class: 'row' }, [audio, 'Sonar al llegar un aviso']),
-    el('div', {}, [saveCfg]),
+    el('div', {}, [saveCfg, cfgStatus]),
   );
 
   const gear = el('button', { class: 'btn ghost', type: 'button', text: 'Config' });
@@ -141,12 +147,10 @@ export function createNotifier(ctx) {
 
   /** Reenvía los avisos nuevos a Slack/correo (best-effort, no bloquea la UI). @param {typeof messages} nuevos */
   function relay(nuevos) {
-    if (nuevos.length === 0 || (!cfg.slackWebhook && !cfg.email)) return;
+    if (nuevos.length === 0) return;
     const text = `PayGuard · ${nuevos.length} novedad(es):\n${nuevos.map((m) => `• ${m.text}`).join('\n')}`;
-    ctx.api('/notify', {
-      method: 'POST',
-      body: JSON.stringify({ text, slackWebhook: cfg.slackWebhook, email: cfg.email }),
-    }).catch(() => { /* el aviso en pantalla ya quedó; el reenvío es best-effort */ });
+    ctx.api('/notify', { method: 'POST', body: JSON.stringify({ text }) })
+      .catch(() => { /* el aviso en pantalla ya quedó; el reenvío es best-effort */ });
   }
 
   return {
@@ -155,6 +159,10 @@ export function createNotifier(ctx) {
       if (!target) return;
       target.append(head, cfgBox, list);
       paint();
+      ctx.api('/notify-config').then((cfg) => {
+        slack.value = cfg.slackWebhook ?? '';
+        email.value = cfg.email ?? '';
+      }).catch(() => { /* no bloquea el arranque */ });
     },
     sync(decisions) {
       const prevIds = new Set(messages.map((m) => m.id));
@@ -163,7 +171,7 @@ export function createNotifier(ctx) {
       const nuevos = messages.filter((m) => !prevIds.has(m.id) && !seen.has(m.id));
       paint();
       if (nuevos.length > 0) {
-        if (cfg.audio) beep();
+        if (audioOn) beep();
         relay(nuevos);
       }
     },
