@@ -116,6 +116,9 @@ async function route(req, url) {
   if (p === '/api/notify' && method === 'POST') return api.postNotify(state, await readBody(req));
   if (p === '/api/notify-config' && method === 'GET') return api.getNotifyConfig(state);
   if (p === '/api/notify-config' && method === 'PUT') return api.putNotifyConfig(state, await readBody(req));
+  if (p === '/api/apikeys' && method === 'GET') return api.getApiKeys(state);
+  if (p === '/api/apikeys' && method === 'POST') return api.postApiKey(state, await readBody(req));
+  if (p.startsWith('/api/apikeys/') && method === 'DELETE') return api.deleteApiKey(state, decodeURIComponent(p.slice(13)));
   if (p === '/api/daily-run' && method === 'GET') {
     return api.getDailyRun(state, { dataset: DATASET, date: url.searchParams.get('date') });
   }

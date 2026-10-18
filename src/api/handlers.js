@@ -202,6 +202,39 @@ export async function putNotifyConfig(state, input) {
   return { status: 200, body: { ok: true } };
 }
 
+/** Lista las API keys de demo (claves enmascaradas excepto los últimos 4 dígitos).
+ * @param {AppState} state @returns {ApiResponse} */
+export const getApiKeys = (state) => ({
+  status: 200,
+  body: [...state.apiKeys.values()].map((k) => ({
+    id: k.id, key: `${k.key.slice(0, 10)}…${k.key.slice(-4)}`, role: k.role, createdAt: k.createdAt,
+  })),
+});
+
+/** Crea una API key de demo. La clave completa solo se devuelve aquí.
+ * @param {AppState} state @param {{ role?: string }} input @returns {Promise<ApiResponse>} */
+export async function postApiKey(state, input) {
+  const { role } = input ?? {};
+  if (role !== 'read' && role !== 'write' && role !== 'admin') {
+    return { status: 400, body: { errors: ['role debe ser read, write o admin'] } };
+  }
+  const suffix = Math.random().toString(36).slice(2, 14) + Math.random().toString(36).slice(2, 14);
+  const key = `pg_${role}_${suffix}`;
+  const entry = { id: key, key, role, createdAt: state.now.toISOString() };
+  state.apiKeys.set(key, entry);
+  await state.audit.append({ type: 'apikey-created', actor: 'admin', payload: { role }, at: state.now });
+  return { status: 201, body: { key, role } };
+}
+
+/** Revoca una API key de demo.
+ * @param {AppState} state @param {string} key @returns {Promise<ApiResponse>} */
+export async function deleteApiKey(state, key) {
+  if (!state.apiKeys.has(key)) return { status: 404, body: { error: 'no encontrado' } };
+  state.apiKeys.delete(key);
+  await state.audit.append({ type: 'apikey-revoked', actor: 'admin', payload: { prefix: key.slice(0, 12) }, at: state.now });
+  return { status: 200, body: { ok: true } };
+}
+
 /** Fecha de referencia de "hoy": la del reloj del estado, salvo que se pida otra. */
 const referenceDate = (/** @type {AppState} */ state, /** @type {string|null} */ date) =>
   (date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : state.now.toISOString().slice(0, 10));

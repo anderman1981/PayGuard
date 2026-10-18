@@ -29,6 +29,9 @@ export function createState(companyUrl, now = new Date()) {
       slackWebhook: process.env.PAYGUARD_SLACK_WEBHOOK ?? '',
       email: process.env.PAYGUARD_NOTIFY_EMAIL ?? '',
     },
+    /** API keys de demo (in-memory). Se conservan al resetear el estado.
+     *  @type {Map<string, { id: string, key: string, role: string, createdAt: string }>} */
+    apiKeys: new Map(),
     now,
   };
 }
