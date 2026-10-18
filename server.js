@@ -48,7 +48,8 @@ const MIME = {
 
 /** Cabeceras de seguridad en toda respuesta (SECURITY.md §4). */
 const SECURITY_HEADERS = {
-  'content-security-policy': "default-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'",
+  'content-security-policy': "default-src 'self'; style-src 'self' 'unsafe-inline';"
+    + " img-src 'self' data:; object-src 'none'; base-uri 'none'",
   'x-content-type-options': 'nosniff',
   'x-frame-options': 'DENY',
   'referrer-policy': 'no-referrer',
