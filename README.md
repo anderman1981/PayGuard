@@ -104,14 +104,21 @@ Los jueces y evaluadores pueden unirse al workspace de Slack del proyecto para r
 
 👉 **[Unirse al workspace PayGuard en Slack](https://join.slack.com/t/hackathon30x/shared_invite/zt-4dchf24dj-~3cNyZEimfSQ803JrLadyA)**
 
-Cada vez que el agente frena o escala una factura, publica un aviso en el canal `#alertas-agente` con el ID de la factura, el motivo y las reglas que lo activaron.
+Una vez dentro del workspace, únete al canal **`#alertas-agente`**. Cada vez que el agente frena o escala una factura, llega un aviso con el ID de la factura, el motivo y las reglas que lo activaron.
 
-Para activar las notificaciones en tu propia instancia de Railway, agrega las variables:
+### Variables de entorno en Railway
 
-```
-PAYGUARD_ALLOW_NOTIFY=1
-PAYGUARD_SLACK_WEBHOOK=https://hooks.slack.com/services/...
-```
+Para activar las notificaciones en tu propia instancia de Railway, ve a *Variables* en el panel de Railway y agrega:
+
+| Variable | Valor | Descripción |
+|---|---|---|
+| `PAYGUARD_ALLOW_NOTIFY` | `1` | Activa el relay de notificaciones |
+| `PAYGUARD_SLACK_WEBHOOK` | `https://hooks.slack.com/services/...` | Webhook del canal `#alertas-agente` |
+| `PAYGUARD_ALLOW_UPLOAD` | `1` | Activa la subida y extracción de facturas reales |
+| `PAYGUARD_NOTIFY_EMAIL` | `correo@empresa.com` | Email de aviso (opcional) |
+| `PAYGUARD_EMAIL_WEBHOOK` | `https://...` | Endpoint que envía el email (opcional) |
+
+> Las notificaciones también se configuran en vivo desde la app: **El Agente → Config** en el sidebar izquierdo, sin necesidad de reiniciar el servidor.
 
 ## Licencia
 
