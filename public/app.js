@@ -86,35 +86,15 @@ function viewResumen() {
     el('b', { text: t.value }), el('span', { text: t.label }),
   ])));
 
-  const hero = el('div', { class: 'stack' }, [
-    el('p', {
-      text: 'PayGuard es el agente de pagos que explica cada decisión. Revisa las facturas de tu empresa y decide cuáles pagar, '
-        + 'cuáles frenar por alguna regla y cuáles escalar a un humano — sin mover dinero jamás.',
-    }),
-    el('p', {
-      class: 'muted',
-      text: 'La IA extrae los datos del documento. El motor de reglas (R01–R13) toma la decisión de forma determinista. '
-        + 'Cero pagos indebidos es el principio no negociable: ante la duda, el agente frena o escala.',
-    }),
-  ]);
-
-  const empty = state.decisions.length === 0
-    ? el('div', { class: 'empty-state stack' }, [
-      el('p', { class: 'muted', text: '¿Listo para empezar? Procesa tus primeras facturas en 3 pasos:' }),
-      el('ol', {}, [
-        el('li', { text: '1. Ve a la pestaña Ingesta y carga un archivo de facturas.' }),
-        el('li', { text: '2. La corrida diaria (o el botón "Ejecutar ahora") las evalúa automáticamente.' }),
-        el('li', { text: '3. Vuelve aquí para ver el resumen, aprobar pendientes y revisar el historial.' }),
-      ]),
-    ])
-    : null;
+  const hero = el('p', {
+    class: 'muted',
+    text: 'PayGuard evalúa cada factura con 13 reglas deterministas: pagar, frenar o escalar a un humano. '
+      + 'La IA extrae datos — el código decide. Cero pagos indebidos.',
+  });
 
   const prop = el('div', { class: 'stack' }, [
-    el('h2', { text: 'Propuestas de ajuste' }),
-    el('p', {
-      class: 'muted',
-      text: 'El sistema las sugiere a partir de casos resueltos. Ninguna se aplica sin que una persona la apruebe.',
-    }),
+    el('h3', { text: 'Propuestas de ajuste' }),
+    el('p', { class: 'muted', text: 'Sugeridas por el sistema; requieren aprobación humana antes de aplicarse.' }),
     ...(state.proposals.length === 0
       ? [el('p', { class: 'muted', text: 'Todavía no hay propuestas.' })]
       : state.proposals.map((p) => el('div', { class: 'rule' }, [
@@ -122,7 +102,8 @@ function viewResumen() {
         el('p', { text: String(p.rationale) }),
       ]))),
   ]);
-  return el('div', { class: 'stack' }, [hero, empty, grid, prop, buildVideoSection()].filter(Boolean));
+  const bottom = el('div', { class: 'resumen-bottom' }, [buildVideoSection(), prop]);
+  return el('div', { class: 'stack' }, [grid, hero, bottom]);
 }
 
 
