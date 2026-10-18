@@ -257,7 +257,10 @@ function render() {
     style: 'margin-bottom: 6px; font-size:11px',
     text: profile,
   });
-  const switchBtn = el('button', { class: 'btn ghost', type: 'button', text: 'Cambiar perfil', style: 'font-size:11px; padding:4px 8px' });
+  const switchBtn = el('button', {
+    class: 'btn ghost', type: 'button', text: 'Cerrar sesión',
+    style: 'font-size:11px; padding:4px 8px',
+  });
   switchBtn.addEventListener('click', () => {
     mountLogin((p) => { profile = p; state.view = views[0]?.[0] ?? 'resumen'; render(); });
   });
