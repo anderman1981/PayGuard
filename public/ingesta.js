@@ -26,11 +26,23 @@ export function viewIngesta(ctx) {
   const { el } = ctx;
   const result = el('div', { id: 'ingesta-result' });
 
+  /** Datos del último archivo subido para pre-llenar el formulario. @type {Record<string,unknown>|null} */
+  let prefill = null;
+
+  /** Cambia al tab "Capturar" pre-llenando el formulario con los datos extraídos.
+   * @param {Record<string,unknown>} inv */
+  function switchToCapturar(inv) {
+    prefill = inv;
+    active = 'capturar';
+    paint();
+    prefill = null; // consumido; el formulario ya está renderizado
+  }
+
   /** @type {[string, string, () => HTMLElement][]} */
   const tabs = [
-    ['capturar', 'Capturar', () => sectionManual(ctx, result)],
+    ['capturar', 'Capturar', () => sectionManual(ctx, result, prefill)],
     ['json', 'Pegar JSON', () => sectionJson(ctx, result)],
-    ['subir', 'Subir archivo', () => sectionUpload(ctx, result)],
+    ['subir', 'Subir archivo', () => sectionUpload(ctx, result, switchToCapturar)],
   ];
   let active = 'capturar';
   const nav = el('div', { class: 'tabs', role: 'tablist', 'aria-label': 'Formas de ingresar facturas' });
@@ -136,13 +148,32 @@ async function evaluate(ctx, box, invoices) {
   }
 }
 
-/** @param {IngestaCtx} ctx @param {HTMLElement} box */
-function sectionManual(ctx, box) {
+/**
+ * @param {IngestaCtx} ctx
+ * @param {HTMLElement} box
+ * @param {Record<string,unknown>|null} [prefill]
+ */
+function sectionManual(ctx, box, prefill) {
   const { el } = ctx;
+  /** Mapeo de campos del formulario a campos del invoice extraído. */
+  const prefillMap = prefill ? /** @type {Record<string,string>} */ ({
+    id: String(prefill.id ?? ''),
+    counterpartyName: String(prefill.counterpartyName ?? ''),
+    counterpartyTaxId: String(prefill.counterpartyTaxId ?? ''),
+    amount: prefill.amount != null ? String(prefill.amount) : '',
+    currency: String(prefill.currency ?? ''),
+    issueDate: String(prefill.issueDate ?? ''),
+    dueDate: String(prefill.dueDate ?? ''),
+    invoiceNumber: String(prefill.invoiceNumber ?? ''),
+    contractRef: String(prefill.contractId ?? ''),
+    accountLast4: String(prefill.bankAccount ?? '').slice(-4),
+    concept: String(prefill.description ?? ''),
+  }) : {};
   /** @type {Record<string, HTMLInputElement>} */
   const inputs = {};
   const grid = el('div', { class: 'form-grid' }, MANUAL_FIELDS.map(([key, label, ph]) => {
-    const input = el('input', { id: `m-${key}`, placeholder: ph });
+    const val = prefillMap[key] ?? '';
+    const input = el('input', { id: `m-${key}`, placeholder: ph, ...(val ? { value: val } : {}) });
     inputs[key] = /** @type {HTMLInputElement} */ (input);
     return el('label', { for: `m-${key}` }, [label, input]);
   }));
@@ -151,8 +182,12 @@ function sectionManual(ctx, box) {
     const form = Object.fromEntries(Object.entries(inputs).map(([k, i]) => [k, i.value]));
     evaluate(ctx, box, [buildManualInvoice(form)]);
   });
+  const hint = prefill
+    ? el('p', { class: 'notice ok', text: '✓ Datos pre-llenados desde el archivo subido. Revisa y edita si es necesario.' })
+    : null;
   return el('div', { class: 'stack' }, [
     el('h2', { text: 'Capturar una factura' }),
+    ...(hint ? [hint] : []),
     el('p', { class: 'muted', text: 'Escribe los datos y el agente decide al instante.' }),
     grid, el('div', {}, [evaluar]),
   ]);
@@ -178,8 +213,12 @@ function sectionJson(ctx, box) {
   ]);
 }
 
-/** @param {IngestaCtx} ctx @param {HTMLElement} box */
-function sectionUpload(ctx, box) {
+/**
+ * @param {IngestaCtx} ctx
+ * @param {HTMLElement} box
+ * @param {((inv: Record<string,unknown>) => void)|null} [onExtracted]
+ */
+function sectionUpload(ctx, box, onExtracted) {
   const { el, state, api, setNotice, refresh } = ctx;
   const head = [
     el('h2', { text: 'Subir un archivo' }),
@@ -203,12 +242,19 @@ function sectionUpload(ctx, box) {
         method: 'POST',
         body: JSON.stringify({ file: { name: f.name, mime: f.type || 'application/octet-stream', bytes } }),
       });
-      paintUploadResult(ctx, box, r);
+      // Actualizar estado local
       if (r.invoice?.id && !state.invoices.some((i) => i.id === r.invoice.id)) {
         state.invoices.unshift({ id: r.invoice.id, extraction: r.invoice });
       }
-      await refresh();
-      setNotice(`Archivo procesado por "${r.provider}".`, 'ok');
+      if (r.decision) {
+        const ex = state.decisions.find((/** @type {any} */ d) => d.invoiceId === r.decision.invoiceId);
+        if (ex) Object.assign(ex, r.decision); else state.decisions.unshift(r.decision);
+      }
+      // Cambiar a Capturar y pre-llenar ANTES de refresh() para que el DOM no se destruya
+      setNotice(`Archivo procesado por "${r.provider}". Datos extraídos pre-llenados en Capturar.`, 'ok');
+      if (r.invoice && onExtracted) onExtracted(/** @type {Record<string,unknown>} */ (r.invoice));
+      // Pintar tarjeta de resultado (ahora en la vista Capturar activa)
+      paintUploadResult(ctx, box, r);
     } catch (err) {
       setNotice(/** @type {Error} */ (err).message, 'stop');
     }
