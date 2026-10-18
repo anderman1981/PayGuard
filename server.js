@@ -126,8 +126,14 @@ async function route(req, url) {
   if (p === '/api/daily-run' && method === 'POST') {
     return api.postDailyRun(state, await readBody(req), lang, ctx, { dataset: DATASET, onEvent: broadcastEvent, delay: dailyDelay });
   }
+  if (p === '/api/autonomy-profile' && method === 'GET') return api.getAutonomyProfile(state);
+  if (p === '/api/autonomy-profile' && method === 'PUT') {
+    const profileUrl = (/** @type {string} */ id) => new URL(`./data/profiles/${id}.json`, import.meta.url);
+    return api.putAutonomyProfile(state, await readBody(req), profileUrl);
+  }
   if (p === '/api/reset' && method === 'POST') {
     resetState(state, new URL('./data/company.json', import.meta.url));
+    state.autonomyProfile = 'conservative';
     broadcastEvent({ type: 'reset' });
     return { status: 200, body: { ok: true, message: 'Estado reiniciado. Listo para nueva prueba.' } };
   }

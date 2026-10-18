@@ -352,3 +352,6 @@ export async function postUpload(state, { file }, lang, ctx) {
     },
   };
 }
+
+export { AUTONOMY_PROFILES, NOTE_99PCT, getAutonomyProfile, putAutonomyProfile }
+  from './autonomy.js';

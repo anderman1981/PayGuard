@@ -246,3 +246,36 @@ test('apikeys: revocar clave inexistente devuelve 404', async () => {
   const res = await api.deleteApiKey(state, 'pg_read_nope');
   assert.equal(res.status, 404);
 });
+
+test('autonomy-profile: GET devuelve perfil conservador por defecto', () => {
+  const { state } = setup();
+  const { status, body } = api.getAutonomyProfile(state);
+  assert.equal(status, 200);
+  assert.equal(body.current, 'conservative');
+  assert.ok(Array.isArray(body.profiles));
+  assert.equal(body.profiles.length, 3);
+  assert.ok(body.note99pct.includes('99'));
+});
+
+test('autonomy-profile: PUT cambia perfil a standard y queda auditado', async () => {
+  const { state } = setup();
+  const profileUrl = (id) => new URL(`../data/profiles/${id}.json`, import.meta.url);
+  const res = await api.putAutonomyProfile(state, { profile: 'standard' }, profileUrl);
+  assert.equal(res.status, 200);
+  assert.equal(res.body.ok, true);
+  assert.equal(res.body.profile, 'standard');
+  assert.equal(state.autonomyProfile, 'standard');
+  const { body } = api.getAutonomyProfile(state);
+  assert.equal(body.current, 'standard');
+  const log = state.audit.list({ type: 'autonomy-profile-changed' });
+  assert.equal(log.length, 1);
+  assert.equal(log[0].actor, 'admin');
+});
+
+test('autonomy-profile: PUT rechaza perfil desconocido', async () => {
+  const { state } = setup();
+  const profileUrl = (id) => new URL(`../data/profiles/${id}.json`, import.meta.url);
+  const res = await api.putAutonomyProfile(state, { profile: 'ultra' }, profileUrl);
+  assert.equal(res.status, 400);
+  assert.ok(res.body.errors[0].includes('conservative'));
+});

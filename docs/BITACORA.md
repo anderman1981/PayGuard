@@ -30,3 +30,5 @@ Una línea por sesión de trabajo. Ver [DOC-RULE.md](DOC-RULE.md).
 | 2026-10-18 | claude | fea/audit-corrections | 0.22.0 | Login: campo email+contraseña en la pantalla de login demo; botón Cerrar sesión visible en todas las vistas |
 | 2026-10-18 | claude | fea/audit-corrections | 0.23.0 | Fix CSP: permite style-src 'unsafe-inline' para los estilos inline generados por el helper el() del frontend sin dependencias |
 | 2026-10-18 | claude | fea/audit-corrections | 0.24.0 | OCR real: script scripts/test-ocr.js para validar extracción con Gemini Flash 2.5 y Groq sobre facturas reales (PDF/JPG/PNG); docs: README con métricas reales (47 facturas, 76,6 % autonomía), DEMO.md guion 3 min, BITACORA al día |
+| 2026-10-18 | claude | fea/audit-corrections | 0.25.0 | Docs: README con métricas reales corregidas, DEMO.md guion 3 min, BITACORA al día v0.14–v0.24 |
+| 2026-10-18 | claude | fea/audit-corrections | 0.26.0 | Feature admin: selector de Perfil de Autonomía (Conservador/Estándar/Maduro) con nota explicativa del 99 %; 3 perfiles JSON en data/profiles/, endpoints GET/PUT /api/autonomy-profile, nueva pestaña en vista Desarrollador |

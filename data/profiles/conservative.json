@@ -1,0 +1,32 @@
+{
+  "_nota": "Empresa, contrapartes y cifras 100% ficticias. Ningún dato real.",
+  "_profile": "conservative",
+  "company": { "name": "Andes Labs Inc.", "country": "US", "period": "2026-10" },
+  "balances": { "USD": 85000, "COP": 60000000, "MXN": 150000, "ARS": 2000000 },
+  "counterparties": [
+    { "id": "cp-01", "name": "Pixel Norte S.A.S.", "taxId": "900111222-1", "country": "CO", "currency": "COP", "bank": { "bankName": "Banco Andino", "accountLast4": "4521" }, "allowed": true },
+    { "id": "cp-02", "name": "Laura Gómez (contratista)", "taxId": "CO-1020304050", "country": "CO", "currency": "USD", "bank": { "bankName": "Banco Andino", "accountLast4": "8812" }, "allowed": true },
+    { "id": "cp-03", "name": "Nube Azteca S.A. de C.V.", "taxId": "NAZ190305AB1", "country": "MX", "currency": "MXN", "bank": { "bankName": "Banco Maya", "accountLast4": "1209" }, "allowed": true },
+    { "id": "cp-04", "name": "DataPampa S.R.L.", "taxId": "30-71234567-8", "country": "AR", "currency": "USD", "bank": { "bankName": "Banco del Plata", "accountLast4": "7730" }, "allowed": true },
+    { "id": "cp-05", "name": "CloudForge LLC", "taxId": "US-87-1234567", "country": "US", "currency": "USD", "bank": { "bankName": "First Liberty Bank", "accountLast4": "0042" }, "allowed": true },
+    { "id": "cp-06", "name": "Diego Ramírez (contratista)", "taxId": "MX-RAMD900101", "country": "MX", "currency": "USD", "bank": { "bankName": "Banco Maya", "accountLast4": "5566" }, "allowed": true },
+    { "id": "cp-07", "name": "Oficinas Quindío S.A.S.", "taxId": "901333444-4", "country": "CO", "currency": "COP", "bank": { "bankName": "Banco Andino", "accountLast4": "3001" }, "allowed": true },
+    { "id": "cp-08", "name": "LegalSur Abogados", "taxId": "30-79999888-1", "country": "AR", "currency": "ARS", "bank": { "bankName": "Banco del Plata", "accountLast4": "6120" }, "allowed": true },
+    { "id": "cp-09", "name": "Talento Remoto S.A.S.", "taxId": "902555666-9", "country": "CO", "currency": "USD", "bank": { "bankName": "Banco Andino", "accountLast4": "9090" }, "allowed": false }
+  ],
+  "contracts": [
+    { "id": "CT-2026-001", "counterpartyId": "cp-01", "description": "Diseño UI mensual", "amount": 12000000, "currency": "COP", "tolerancePct": 0, "period": "monthly", "active": true },
+    { "id": "CT-2026-002", "counterpartyId": "cp-02", "description": "Desarrollo backend (contrato mensual)", "amount": 4200, "currency": "USD", "tolerancePct": 0, "period": "monthly", "active": true },
+    { "id": "CT-2026-003", "counterpartyId": "cp-03", "description": "Hosting y soporte", "amount": 38000, "currency": "MXN", "tolerancePct": 5, "period": "monthly", "active": true },
+    { "id": "CT-2026-004", "counterpartyId": "cp-04", "description": "Analítica de datos", "amount": 2800, "currency": "USD", "tolerancePct": 0, "period": "monthly", "active": true },
+    { "id": "CT-2026-005", "counterpartyId": "cp-05", "description": "Infraestructura cloud (consumo)", "amount": 6500, "currency": "USD", "tolerancePct": 10, "period": "monthly", "active": true },
+    { "id": "CT-2026-006", "counterpartyId": "cp-06", "description": "QA y automatización", "amount": 3100, "currency": "USD", "tolerancePct": 0, "period": "monthly", "active": true },
+    { "id": "CT-2026-007", "counterpartyId": "cp-07", "description": "Arriendo oficina Medellín", "amount": 8500000, "currency": "COP", "tolerancePct": 0, "period": "monthly", "active": true },
+    { "id": "CT-2026-008", "counterpartyId": "cp-08", "description": "Asesoría legal", "amount": 1500000, "currency": "ARS", "tolerancePct": 0, "period": "one-off", "active": true }
+  ],
+  "paymentHistory": [
+    { "counterpartyId": "cp-01", "invoiceNumber": "PN-0931", "amount": 12000000, "currency": "COP", "paidAt": "2026-09-30" },
+    { "counterpartyId": "cp-02", "invoiceNumber": "LG-2026-09", "amount": 4200, "currency": "USD", "paidAt": "2026-09-30" },
+    { "counterpartyId": "cp-05", "invoiceNumber": "CF-77120", "amount": 6120, "currency": "USD", "paidAt": "2026-10-03" }
+  ]
+}

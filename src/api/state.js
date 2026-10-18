@@ -32,6 +32,8 @@ export function createState(companyUrl, now = new Date()) {
     /** API keys de demo (in-memory). Se conservan al resetear el estado.
      *  @type {Map<string, { id: string, key: string, role: string, createdAt: string }>} */
     apiKeys: new Map(),
+    /** Perfil de autonomía activo. Determina qué data/profiles/*.json se usa. */
+    autonomyProfile: 'conservative',
     now,
   };
 }
