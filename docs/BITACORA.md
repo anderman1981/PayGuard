@@ -33,3 +33,4 @@ Una línea por sesión de trabajo. Ver [DOC-RULE.md](DOC-RULE.md).
 | 2026-10-18 | claude | fea/audit-corrections | 0.25.0 | Docs: README con métricas reales corregidas, DEMO.md guion 3 min, BITACORA al día v0.14–v0.24 |
 | 2026-10-18 | claude | fea/audit-corrections | 0.26.0 | Feature admin: selector de Perfil de Autonomía (Conservador/Estándar/Maduro) con nota explicativa del 99 %; 3 perfiles JSON en data/profiles/, endpoints GET/PUT /api/autonomy-profile, nueva pestaña en vista Desarrollador |
 | 2026-10-18 | claude | fea/audit-corrections | 0.27.0 | UX Ingesta: al subir archivo muestra datos extraídos (beneficiario, monto, fechas, contrato, proveedor IA) + decisión; factura subida aparece al inicio de la lista; paginación en el set de ejemplo; descripción en vista Auditoría |
+| 2026-10-18 | claude | fea/audit-corrections | 0.28.0 | Docs: link de Slack para jueces en README con instrucciones de notificaciones en tiempo real |
