@@ -242,13 +242,19 @@ function sectionUpload(ctx, box, onExtracted) {
         method: 'POST',
         body: JSON.stringify({ file: { name: f.name, mime: f.type || 'application/octet-stream', bytes } }),
       });
-      paintUploadResult(ctx, box, r);
+      // Actualizar estado local
       if (r.invoice?.id && !state.invoices.some((i) => i.id === r.invoice.id)) {
         state.invoices.unshift({ id: r.invoice.id, extraction: r.invoice });
       }
-      await refresh();
-      setNotice(`Archivo procesado por "${r.provider}". Datos pre-llenados en Capturar.`, 'ok');
+      if (r.decision) {
+        const ex = state.decisions.find((/** @type {any} */ d) => d.invoiceId === r.decision.invoiceId);
+        if (ex) Object.assign(ex, r.decision); else state.decisions.unshift(r.decision);
+      }
+      // Cambiar a Capturar y pre-llenar ANTES de refresh() para que el DOM no se destruya
+      setNotice(`Archivo procesado por "${r.provider}". Datos extraídos pre-llenados en Capturar.`, 'ok');
       if (r.invoice && onExtracted) onExtracted(/** @type {Record<string,unknown>} */ (r.invoice));
+      // Pintar tarjeta de resultado (ahora en la vista Capturar activa)
+      paintUploadResult(ctx, box, r);
     } catch (err) {
       setNotice(/** @type {Error} */ (err).message, 'stop');
     }

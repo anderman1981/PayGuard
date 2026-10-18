@@ -1,4 +1,5 @@
 // @ts-check
+import { LOCAL_PROVIDER } from './local-provider.js';
 /**
  * Cadena de proveedores de extracción con respaldo automático.
  * Orden y política en docs/AI-AND-LEARNING.md §1: Gemini → Groq → OpenRouter → Ollama.
@@ -114,6 +115,7 @@ export const PROVIDERS = [
       return (await res.json())?.message?.content ?? '';
     },
   },
+  LOCAL_PROVIDER,
 ];
 
 /** Lleva la cuenta de fallos por proveedor dentro de una corrida. */

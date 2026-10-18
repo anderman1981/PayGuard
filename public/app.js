@@ -13,6 +13,7 @@ import { viewApiDocs } from './apidocs.js';
 import { viewFacturas } from './facturas.js';
 import { viewDeveloper } from './developer.js';
 import { mountLogin } from './login.js';
+import { buildVideoSection } from './video.js';
 
 /** @type {ReturnType<typeof createNotifier>|null} */
 let notifier = null;
@@ -121,7 +122,7 @@ function viewResumen() {
         el('p', { text: String(p.rationale) }),
       ]))),
   ]);
-  return el('div', { class: 'stack' }, [hero, empty, grid, prop].filter(Boolean));
+  return el('div', { class: 'stack' }, [hero, empty, grid, prop, buildVideoSection()].filter(Boolean));
 }
 
 

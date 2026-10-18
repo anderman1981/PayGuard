@@ -316,7 +316,7 @@ export const getMetrics = (state, expected = []) => ({
  * @param {import('../rules/helpers.js').RuleContext} ctx
  * @returns {Promise<ApiResponse>}
  */
-export async function postUpload(state, { file }, lang, ctx) {
+export async function postUpload(state, { file }, lang, ctx, { dataset = [] } = {}) {
   const allowed = process.env.PAYGUARD_ALLOW_UPLOAD === '1';
   if (!allowed) return { status: 403, body: { error: 'subida de facturas desactivada en este entorno' } };
   if (!file || !file.name || !file.mime) {
@@ -330,7 +330,11 @@ export async function postUpload(state, { file }, lang, ctx) {
     mime: file.mime,
   };
 
-  const { invoice, provider, attempts } = await extractInvoice(doc, { mode: 'cache' });
+  const hasLiveKey = !!(process.env.GEMINI_API_KEY || process.env.GROQ_API_KEY
+    || process.env.OPENROUTER_API_KEY || process.env.OLLAMA_HOST);
+  const manifest = dataset.map((d) => ({ id: d.id, extraction: d.extraction }));
+  const mode = hasLiveKey ? 'live' : 'cache';
+  const { invoice, provider, attempts } = await extractInvoice(doc, { mode, manifest, env: process.env });
   const decisions = await processBatch([invoice], { ctx, audit: state.audit, cases: state.cases });
 
   state.invoices.set(invoice.id, invoice);
