@@ -18,6 +18,8 @@ let source = null;
 /** Aviso al humano (notifier.sync), inyectado por app.js. @type {((d: any[]) => void)|null} */
 let notify = null;
 let running = false;
+const CORRIDA_PAGE = 15;
+let corridaPage = 0;
 
 const STATUS = /** @type {const} */ ({
   PENDIENTE: { text: 'Pendiente', tone: 'wait' },
@@ -83,7 +85,8 @@ async function runNow(api, state, setNotice) {
     for (const d of res.decisions) {
       const row = rows.get(d.invoiceId) ?? { id: d.invoiceId };
       rows.set(d.invoiceId, {
-        ...row, status: d.outcome, outcome: d.outcome, summary: d.summary, failed: d.failed, explanation: d.explanation,
+        ...row, status: d.outcome, outcome: d.outcome,
+        summary: d.summary, failed: d.failed, explanation: d.explanation,
       });
       const existing = state.decisions.find((/** @type {any} */ x) => x.invoiceId === d.invoiceId);
       if (existing) Object.assign(existing, d); else state.decisions.push(d);
@@ -97,6 +100,28 @@ async function runNow(api, state, setNotice) {
     running = false;
     if (repaint) repaint();
   }
+}
+
+/** Mezcla un array aleatoriamente (Fisher-Yates). @param {any[]} arr */
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+/**
+ * Selecciona 10 facturas del pool con mezcla de resultados:
+ * ~5 PAY, ~3 HOLD, ~2 ESCALATE. Las que ya están en `rows` se incluyen
+ * intencionalmente para que el motor las detecte como duplicados.
+ * @param {any[]} manifest
+ */
+function pickDemo(manifest) {
+  /** @type {Record<string, any[]>} */
+  const bucket = { PAY: [], HOLD: [], ESCALATE: [] };
+  for (const inv of manifest) {
+    const out = /** @type {string} */ (inv.expected?.outcome ?? 'PAY');
+    if (out in bucket) bucket[out].push(inv);
+  }
+  const pick = (/** @type {any[]} */ arr, n) => shuffle(arr).slice(0, n);
+  const selected = [...pick(bucket.PAY, 5), ...pick(bucket.HOLD, 3), ...pick(bucket.ESCALATE, 2)];
+  if (selected.length < 10) selected.push(...shuffle(manifest).slice(0, 10 - selected.length));
+  return selected.slice(0, 10);
 }
 
 /** @param {{ el: any, lang: string, onOpen?: ((id: string) => void)|null }} ui @param {Record<string, any>} row */
@@ -131,6 +156,7 @@ function rowNode({ el, lang, onOpen }, row) {
  *   notify?: (d: any[]) => void, openDrawer?: (id: string) => void }} ctx
  */
 export function viewCorrida(ctx) {
+  corridaPage = 0;
   const { el, api, state, setNotice } = ctx;
   const onOpen = ctx.openDrawer ?? null;
   notify = ctx.notify ?? null;
@@ -139,18 +165,22 @@ export function viewCorrida(ctx) {
   const btn = el('button', { class: 'btn', type: 'button', text: 'Correr ahora' });
   const demoBtn = el('button', { class: 'btn ghost', type: 'button', text: 'Ejecutar set demo' });
   const status = el('span', { class: 'muted' });
+
   btn.addEventListener('click', () => runNow(api, state, setNotice));
+
   demoBtn.addEventListener('click', async () => {
     if (running) return;
     running = true;
     if (repaint) repaint();
     try {
       const manifest = await fetch('/data/invoices/manifest.json').then((r) => r.json()).catch(() => []);
-      for (const inv of manifest) {
+      const selected = pickDemo(manifest);
+      for (const inv of selected) {
         rows.set(inv.id, { ...inv.extraction, id: inv.id, status: 'PENDIENTE' });
       }
+      corridaPage = 0;
       if (repaint) repaint();
-      const invoices = manifest.map((/** @type {any} */ i) => i.extraction);
+      const invoices = selected.map((/** @type {any} */ i) => i.extraction);
       const res = await api('/run', { method: 'POST', body: JSON.stringify({ invoices }) });
       for (const d of res) {
         const row = rows.get(d.invoiceId) ?? { id: d.invoiceId };
@@ -158,8 +188,8 @@ export function viewCorrida(ctx) {
           ...row, status: d.outcome, outcome: d.outcome,
           summary: d.summary, failed: d.failed, explanation: d.explanation,
         });
-        const existing = state.decisions.find((/** @type {any} */ x) => x.invoiceId === d.invoiceId);
-        if (existing) Object.assign(existing, d); else state.decisions.push(d);
+        const ex = state.decisions.find((/** @type {any} */ x) => x.invoiceId === d.invoiceId);
+        if (ex) Object.assign(ex, d); else state.decisions.push(d);
       }
       if (notify) notify(state.decisions);
       const novedades = res.filter((/** @type {any} */ d) => d.outcome !== 'PAY').length;
@@ -173,14 +203,16 @@ export function viewCorrida(ctx) {
   });
 
   const body = el('tbody', { id: 'corrida-rows' });
+  const pager = el('div', { id: 'corrida-pager' });
   const table = el('table', {}, [
     el('thead', {}, [el('tr', {}, ['Factura', 'Beneficiario', 'Monto', 'Vence', 'Estado', 'Novedad'].map((h) => el('th', { text: h })))]),
     body,
   ]);
 
   repaint = () => {
-    const el2 = document.getElementById('corrida-rows');
-    if (!el2) return;
+    const tbody = document.getElementById('corrida-rows');
+    const pagerEl = document.getElementById('corrida-pager');
+    if (!tbody) return;
     btn.toggleAttribute('disabled', running);
     demoBtn.toggleAttribute('disabled', running);
     btn.textContent = running ? 'Corriendo…' : 'Correr ahora';
@@ -190,13 +222,35 @@ export function viewCorrida(ctx) {
     status.textContent = list.length === 0
       ? 'No hay facturas con pago para hoy.'
       : `${list.length} con pago para hoy · ${done} decidida(s)`;
-    el2.textContent = '';
+
+    const pages = Math.max(1, Math.ceil(list.length / CORRIDA_PAGE));
+    corridaPage = Math.min(corridaPage, pages - 1);
+    const slice = list.slice(corridaPage * CORRIDA_PAGE, (corridaPage + 1) * CORRIDA_PAGE);
+
+    tbody.textContent = '';
     if (list.length === 0) {
       const vacio = 'Sin facturas para hoy. Usa "Ejecutar set demo" o espera el disparador de las 07:00.';
-      el2.append(el('tr', {}, [el('td', { colspan: '6', class: 'muted', text: vacio })]));
-      return;
+      tbody.append(el('tr', {}, [el('td', { colspan: '6', class: 'muted', text: vacio })]));
+    } else {
+      for (const row of slice) tbody.append(rowNode({ el, lang: state.lang, onOpen }, row));
     }
-    for (const row of list) el2.append(rowNode({ el, lang: state.lang, onOpen }, row));
+
+    if (pagerEl) {
+      pagerEl.textContent = '';
+      if (list.length > CORRIDA_PAGE) {
+        const info = el('span', { class: 'muted', text: `Pág ${corridaPage + 1} / ${pages} · ${list.length} factura(s)` });
+        const prev = el('button', { class: 'btn ghost', type: 'button', text: '← Anterior' });
+        const next = el('button', { class: 'btn ghost', type: 'button', text: 'Siguiente →' });
+        prev.toggleAttribute('disabled', corridaPage === 0);
+        next.toggleAttribute('disabled', corridaPage >= pages - 1);
+        prev.addEventListener('click', () => { corridaPage--; if (repaint) repaint(); });
+        next.addEventListener('click', () => { corridaPage++; if (repaint) repaint(); });
+        pagerEl.append(el('div', { class: 'topbar' }, [prev, info, next]));
+      } else if (list.length > 0) {
+        const infoText = `${list.length} factura(s)`;
+        pagerEl.append(el('div', { class: 'topbar' }, [el('span', { class: 'muted', text: infoText })]));
+      }
+    }
   };
 
   const intro = 'Las facturas que vencen hoy o están pendientes. El agente las evalúa en vivo; nunca mueve dinero, solo decide y explica.';
@@ -204,6 +258,7 @@ export function viewCorrida(ctx) {
     el('p', { class: 'muted', text: intro }),
     el('div', { class: 'topbar' }, [btn, demoBtn, status]),
     table,
+    pager,
   ]);
 
   queueMicrotask(async () => {

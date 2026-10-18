@@ -216,3 +216,33 @@ test('notify: rechaza una URL que no es de Slack y no llama fetch', async () => 
   assert.equal(res.body.slack, 'url no permitida');
   assert.equal(called, 0);
 });
+
+test('apikeys: crea, lista y revoca una clave', async () => {
+  const { state } = setup();
+  const created = await api.postApiKey(state, { role: 'read' });
+  assert.equal(created.status, 201);
+  assert.ok(/** @type {any} */ (created.body).key.startsWith('pg_read_'));
+  const key = /** @type {any} */ (created.body).key;
+
+  const list = api.getApiKeys(state);
+  assert.equal(list.status, 200);
+  const entries = /** @type {any[]} */ (list.body);
+  assert.equal(entries.length, 1);
+  assert.ok(entries[0].key.includes('…'));
+
+  const del = await api.deleteApiKey(state, key);
+  assert.equal(del.status, 200);
+  assert.equal(api.getApiKeys(state).body.length, 0);
+});
+
+test('apikeys: rechaza rol inválido', async () => {
+  const { state } = setup();
+  const res = await api.postApiKey(state, { role: 'superadmin' });
+  assert.equal(res.status, 400);
+});
+
+test('apikeys: revocar clave inexistente devuelve 404', async () => {
+  const { state } = setup();
+  const res = await api.deleteApiKey(state, 'pg_read_nope');
+  assert.equal(res.status, 404);
+});
