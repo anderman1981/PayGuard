@@ -36,3 +36,4 @@ Una línea por sesión de trabajo. Ver [DOC-RULE.md](DOC-RULE.md).
 | 2026-10-18 | claude | fea/audit-corrections | 0.28.0 | Docs: link de Slack para jueces en README con instrucciones de notificaciones en tiempo real |
 | 2026-10-18 | claude | fea/audit-corrections | 0.29.0 | UX resumen: descripción hero de PayGuard; demo aleatoria con muestra variable del set de 47 facturas |
 | 2026-10-18 | claude | fea/audit-corrections | 0.30.0 | Fix corrida diaria: rows.clear() al montar vista, al correr y al ejecutar demo — evita acumulación entre corridas |
+| 2026-10-18 | claude | fea/audit-corrections | 0.31.0 | UX ingesta: datos extraídos pre-llenan formulario Capturar al subir archivo; README con variables de entorno para Railway y guía de Slack para jueces |
