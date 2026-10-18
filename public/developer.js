@@ -6,7 +6,7 @@
 
 /** @type {number} */
 let devTab = 0;
-const TABS = ['API Keys', 'Proveedores IA'];
+const TABS = ['API Keys', 'Proveedores IA', 'Perfil de Autonomía'];
 
 /** @type {string|null} */
 let newKeyRevealed = null;
@@ -44,7 +44,8 @@ export function viewDeveloper(ctx) {
     });
     tabBody.textContent = '';
     if (devTab === 0) renderApiKeys(el, api, setNotice, tabBody);
-    else renderAiProviders(el, tabBody);
+    else if (devTab === 1) renderAiProviders(el, tabBody);
+    else renderAutonomyProfile(el, api, setNotice, tabBody);
   }
 
   repaint();
@@ -139,6 +140,80 @@ async function loadKeys(api, tbody, el, setNotice) {
       ]));
     }
   } catch { tbody.textContent = ''; }
+}
+
+/**
+ * @param {ReturnType<typeof import('./app.js').createEl>} el
+ * @param {(path: string, init?: RequestInit) => Promise<any>} api
+ * @param {(t: string, tone: string) => void} setNotice
+ * @param {HTMLElement} into
+ */
+async function renderAutonomyProfile(el, api, setNotice, into) {
+  into.append(el('p', { class: 'muted', text: 'Cargando…' }));
+  let data;
+  try {
+    data = await api('/autonomy-profile');
+  } catch (err) {
+    into.textContent = '';
+    into.append(el('p', { class: 'muted', text: `Error al cargar perfiles: ${/** @type {Error} */ (err).message}` }));
+    return;
+  }
+  into.textContent = '';
+
+  const { current, profiles, note99pct } = data;
+
+  const subtitle = 'El perfil define qué proveedores y contratos conoce el sistema.'
+    + ' Un perfil más maduro aumenta la autonomía proyectada para operaciones diarias reales.';
+  into.append(
+    el('h3', { text: 'Perfil de Autonomía' }),
+    el('p', { class: 'muted', text: subtitle }),
+  );
+
+  for (const p of profiles) {
+    const isActive = p.id === current;
+    const pctPill = el('span', { class: `pill ${isActive ? 'ok' : 'wait'}`, text: `${p.autonomyPct} %` });
+    const vendorsBadge = el('span', { class: 'muted', text: ` · ${p.vendors} proveedores · ${p.contracts} contratos` });
+
+    const btnClass = `btn${isActive ? ' ghost' : ''}`;
+    const btnText = isActive ? '✓ Activo' : 'Seleccionar';
+    const selectBtn = el('button', { class: btnClass, type: 'button', text: btnText });
+    if (isActive) {
+      selectBtn.setAttribute('disabled', 'true');
+      selectBtn.setAttribute('aria-disabled', 'true');
+    } else {
+      selectBtn.addEventListener('click', async () => {
+        selectBtn.setAttribute('disabled', 'true');
+        selectBtn.textContent = 'Aplicando…';
+        try {
+          await api('/autonomy-profile', { method: 'PUT', body: JSON.stringify({ profile: p.id }) });
+          setNotice(`Perfil "${p.label}" activado. Reinicia la corrida diaria para aplicarlo.`, 'ok');
+          into.textContent = '';
+          renderAutonomyProfile(el, api, setNotice, into);
+        } catch (err) {
+          setNotice(/** @type {Error} */ (err).message, 'stop');
+          selectBtn.removeAttribute('disabled');
+          selectBtn.textContent = 'Seleccionar';
+        }
+      });
+    }
+
+    const header = el('header', {}, [pctPill, vendorsBadge]);
+    const title = el('strong', { text: p.label });
+    const desc = el('p', { class: 'muted', text: p.description });
+    const card = el('div', { class: `rule${isActive ? ' rule--active' : ''}` }, [
+      el('div', { class: 'topbar' }, [title, selectBtn]),
+      header,
+      desc,
+    ]);
+    into.append(card);
+  }
+
+  into.append(el('h3', { text: '¿Por qué no el 99 %?' }));
+  const note99Lines = note99pct.split('\n');
+  for (const line of note99Lines) {
+    if (line.trim() === '') continue;
+    into.append(el('p', { class: line.startsWith('•') ? '' : 'muted', text: line }));
+  }
 }
 
 /** @param {ReturnType<typeof import('./app.js').createEl>} el @param {HTMLElement} into */
