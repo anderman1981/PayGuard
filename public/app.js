@@ -85,6 +85,18 @@ function viewResumen() {
     el('b', { text: t.value }), el('span', { text: t.label }),
   ])));
 
+  const hero = el('div', { class: 'stack' }, [
+    el('p', {
+      text: 'PayGuard es el agente de pagos que explica cada decisión. Revisa las facturas de tu empresa y decide cuáles pagar, '
+        + 'cuáles frenar por alguna regla y cuáles escalar a un humano — sin mover dinero jamás.',
+    }),
+    el('p', {
+      class: 'muted',
+      text: 'La IA extrae los datos del documento. El motor de reglas (R01–R13) toma la decisión de forma determinista. '
+        + 'Cero pagos indebidos es el principio no negociable: ante la duda, el agente frena o escala.',
+    }),
+  ]);
+
   const empty = state.decisions.length === 0
     ? el('div', { class: 'empty-state stack' }, [
       el('p', { class: 'muted', text: '¿Listo para empezar? Procesa tus primeras facturas en 3 pasos:' }),
@@ -109,7 +121,7 @@ function viewResumen() {
         el('p', { text: String(p.rationale) }),
       ]))),
   ]);
-  return el('div', {}, [empty, grid, prop].filter(Boolean));
+  return el('div', { class: 'stack' }, [hero, empty, grid, prop].filter(Boolean));
 }
 
 
@@ -335,7 +347,12 @@ async function start() {
     await refresh();
     setNotice('Generando facturas ficticias…', 'ok');
     render();
-    await runBatch();
+    // Mezcla aleatoria para que cada demo muestre números distintos
+    const shuffled = [...state.invoices].sort(() => Math.random() - 0.5);
+    const sampleSize = 25 + Math.floor(Math.random() * (state.invoices.length - 25 + 1));
+    const sample = shuffled.slice(0, sampleSize);
+    await api('/run', { method: 'POST', body: JSON.stringify({ invoices: sample.map((i) => i.extraction) }) });
+    await refresh();
     state.view = 'resumen';
     setNotice(`✓ Demo lista: ${state.decisions.length} facturas ficticias generadas y evaluadas.`, 'ok');
   });
