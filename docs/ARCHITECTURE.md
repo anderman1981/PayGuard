@@ -174,8 +174,10 @@ desconocidos (un modelo no puede inyectar datos que el motor no espera), exige f
 ISO, divisa ISO-4217 y monto numérico, e interpreta montos escritos en cualquier
 convención (`parseAmount`). `src/extraction/prompt.js` arma la instrucción, que declara
 el documento como dato y prohíbe inventar. `src/extraction/providers.js` tiene la cadena
-Gemini → Groq → OpenRouter → Ollama con su interruptor, y `src/extraction/index.js`
+Gemini → Groq → OpenRouter → Ollama → `local-text` con su interruptor, y `src/extraction/index.js`
 ofrece `extractInvoice` en modo caché (demo y pruebas, sin llamar a nadie) o en vivo.
+`src/extraction/local-provider.js` es el proveedor de último recurso: extrae texto de PDFs
+usando `node:zlib` (built-in) y aplica regex para encontrar campos; no llama a la red.
 Si ningún proveedor responde, devuelve confianza 0 y R01 escala.
 
 ### Implementación de M6
@@ -205,7 +207,7 @@ src/config       reglas por defecto y su validación (default-rules.js)
 src/integrations account-source.js (fuente de cuenta: saldos, contrapartes, contratos,
                  historial; hoy MockAccountSource, mañana Blinka de solo lectura)
                  y readonly-guard.js (bloquea todo movimiento de dinero)
-src/extraction   M2 (schema.js, prompt.js, providers.js, index.js)
+src/extraction   M2 (schema.js, prompt.js, providers.js, local-provider.js, index.js)
 src/rules        M3
 src/audit        M4 (log.js cadena SHA-256, explain.js texto legible)
 src/approvals    M5

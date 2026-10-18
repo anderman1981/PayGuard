@@ -113,7 +113,7 @@ async function route(req, url) {
   if (p === '/api/audit/verify') return api.getAuditVerify(state);
   if (p === '/api/proposals') return api.getProposals(state);
   if (p === '/api/metrics') return api.getMetrics(state, []);
-  if (p === '/api/upload' && method === 'POST') return api.postUpload(state, await readBody(req), lang, ctx);
+  if (p === '/api/upload' && method === 'POST') return api.postUpload(state, await readBody(req), lang, ctx, { dataset: DATASET });
   if (p === '/api/notify' && method === 'POST') return api.postNotify(state, await readBody(req));
   if (p === '/api/notify-config' && method === 'GET') return api.getNotifyConfig(state);
   if (p === '/api/notify-config' && method === 'PUT') return api.putNotifyConfig(state, await readBody(req));
